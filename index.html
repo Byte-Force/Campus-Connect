@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>RPI Campus Connect</title>
+  <style>
+    body {
+      background-color: #f2f2f2;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    }
+
+    h1 {
+      text-align: center;
+      margin-top: 50px;
+      font-size: 36px;
+      color: #333;
+      letter-spacing: 2px;
+    }
+
+    .cog-container {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 300px;
+    }
+
+    .cog {
+      width: 100px;
+      height: 100px;
+      animation: rotate 10s linear infinite;
+    }
+
+    @keyframes rotate {
+      100% {
+        transform: rotate(360deg);
+      }
+    }
+
+    .message {
+      text-align: center;
+      margin-top: 30px;
+      font-size: 18px;
+      color: #555;
+      line-height: 1.5;
+    }
+  </style>
+</head>
+<body>
+  <h1>RPI Campus Connect</h1>
+  <div class="cog-container">
+    <img class="cog" src="./image/cog.png" alt="Wheel Cog">
+  </div>
+
+  <div class="message">
+    <p>We are excited to announce that RPI Campus Connect is coming soon!</p>
+    <p>Stay tuned for the release and we hope you'll love it!</p>
+  </div>
+
+  <script>
+    // You can add additional JavaScript code here if needed
+  </script>
+</body>
+</html>
