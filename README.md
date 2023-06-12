@@ -14,3 +14,4 @@ With different blocks dedicated to different aspects of student life, including:
 Whether it's seeking study resources, participating in coding challenges, or even buying and selling personal items within the RPI community, **Campus Connect** fosters a sense of unity and connectivity among students.
 
 Stay connected, exchange ideas, and thrive with **CampusConnect**, the ultimate student discussion platform for the RPI community.
+If you have any questions, please contact us!
