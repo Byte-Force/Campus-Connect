@@ -1,14 +1,12 @@
-import './App.css'
+import React from 'react';
+import LoginPage from './component/LoginPage';
 
-function App() {
-
+const App: React.FC = () => {
   return (
-    <>
-      <h1 className="text-3xl font-bold underline text-blue-500">
-      Hello world!
-    </h1>
-    </>
-  )
-}
+    <div>
+      <LoginPage />
+    </div>
+  );
+};
 
-export default App
+export default App;
