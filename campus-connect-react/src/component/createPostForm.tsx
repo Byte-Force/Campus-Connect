@@ -46,42 +46,45 @@ const PostForm = () => {
     };
 
     return (
-        <form onSubmit={handleSubmit} className="p-5 bg-gray-200 rounded-md">
-            <div className="mb-4">
-                <label htmlFor="title" className="block text-gray-700 font-bold mb-2">
-                    Title
-                </label>
-                <input
-                    type="text"
-                    id="title"
-                    className="w-full px-3 py-2 border rounded-lg focus:outline-none focus:border-blue-500"
-                    value={title}
-                    onChange={handleTitleChange}
-                    required
-                />
-            </div>
-            <div className="mb-4">
-                <label htmlFor="body" className="block text-gray-700 font-bold mb-2">
-                    Body
-                </label>
-                <textarea
-                    id="body"
-                    className="w-full px-3 py-2 border rounded-lg focus:outline-none focus:border-blue-500"
-                    rows={8}
-                    value={body}
-                    onChange={handleBodyChange}
-                    required
-                />
-            </div>
-            <div className="flex justify-end">
-                <button
-                    type="submit"
-                    className="bg-blue-500 text-white font-bold px-4 py-2 rounded hover:bg-blue-600"
-                >
-                    Post
-                </button>
-            </div>
-        </form>
+        <div>
+            <h1 className="text-2xl font-bold"> Create a Post</h1>
+            <form onSubmit={handleSubmit} className="p-5 bg-gray-200 rounded-md">
+                <div className="mb-4">
+                    <label htmlFor="title" className="block text-gray-700 font-bold mb-2">
+                        Title
+                    </label>
+                    <input
+                        type="text"
+                        id="title"
+                        className="w-full px-3 py-2 border rounded-lg focus:outline-none focus:border-blue-500"
+                        value={title}
+                        onChange={handleTitleChange}
+                        required
+                    />
+                </div>
+                <div className="mb-4">
+                    <label htmlFor="body" className="block text-gray-700 font-bold mb-2">
+                        Body
+                    </label>
+                    <textarea
+                        id="body"
+                        className="w-full px-3 py-2 border rounded-lg focus:outline-none focus:border-blue-500"
+                        rows={8}
+                        value={body}
+                        onChange={handleBodyChange}
+                        required
+                    />
+                </div>
+                <div className="flex justify-end">
+                    <button
+                        type="submit"
+                        className="bg-blue-500 text-white font-bold px-4 py-2 rounded hover:bg-blue-600"
+                    >
+                        Post
+                    </button>
+                </div>
+            </form>
+        </div>
     );
 };
 
