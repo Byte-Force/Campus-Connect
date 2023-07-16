@@ -1,24 +1,30 @@
 import React, { useState } from "react";
+import Home from "/Users/wendyyang/Documents/GitHub/Campus-Connect/image/home.png"; //Have to fix this 
+import Event from "/Users/wendyyang/Documents/GitHub/Campus-Connect/image/calendar.png";
 
 
-const categories = ["Home", "IT", "Computer Science", "Events"];
+const categories = ["IT", "Computer Science", "Events"];
 
 export default function SideBar() {
 
     return (
         <div className="flex h-screen">
-            <div className="w-64 h-981 flex-shrink-0 bg-gray-200 p-4">
-                <img
-                    src="home-icon.png"
-                    alt="Home Icon"
-                    className="w-6 h-6 mb-2"
-                />
-                <span className="text-lg font-bold mb-4">Home</span>
+            <div className="w-64 h-981 flex-shrink-0 bg-gray-200 p-10">
+                <div className="flex items-center mb-6">
+
+                    <img src={Home} alt="Home Icon" className="w-6 h-6 mr-2" />
+                    <a href='#' className="text-xl font-bold  hover:text-gray-500">Home</a>
+                </div>
+                <div className="flex items-center mb-6">
+                    <img src={Event} alt="Event Icon" className="w-6 h-6 mr-2 " />
+                    <a href="#events" className="text-xl font-bold  hover:text-gray-500">Events</a>
+                </div>
+
                 <ul className="space-y-2">
                     {categories.map((category) => (
                         <li
                             key={category}
-                            className="text-blue-600 cursor-pointer hover:text-blue-800"
+                            className="text-xl font-bold cursor-pointer hover:text-gray-500"
                             onClick={() => console.log(`Clicked on ${category}`)}
                         >
                             {category}
