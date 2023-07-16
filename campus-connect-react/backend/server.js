@@ -33,6 +33,8 @@ app.use(passport.session())
 app.use(methodOverride('_method'))
 
 
+// The main page to be rendered is index.ejs. 
+// This page will be rendered only if the user is authenticated.
 app.get('/', checkAuthenticated, (req, res) => {
     res.render('index.ejs', {name: req.user.name})
 })
@@ -77,7 +79,8 @@ app.delete('/logout', (req, res) => {
 })
 
 
-
+// These two functions check if the user is authenticated or not.
+// Based on that, the user will be redirected to the login page or the main page.
 function checkAuthenticated(req, res, next){
     if(req.isAuthenticated()){
         return next()
