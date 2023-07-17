@@ -9,6 +9,10 @@ const passport = require('passport')
 const flash = require('express-flash')
 const session = require('express-session')
 const methodOverride = require('method-override')
+const axios = require('axios');
+const {MongoClient} = require('mongodb');
+const url = 'mongodb+srv://fengj5:fHg06pjJ5ltsv0G8@cluster0.nrh8keh.mongodb.net/?retryWrites=true&w=majority';
+const client = new MongoClient(url);
 
 const initializePassport = require('./passport-config')
 initializePassport(
@@ -27,10 +31,24 @@ app.use(session({
     resave: false,
     saveUninitialized: false
 }))
-
 app.use(passport.initialize())
 app.use(passport.session())
 app.use(methodOverride('_method'))
+app.use(express.json());
+
+app.use((req, res, next) => {
+    res.setHeader("Access-Control-Allow-Origin", "http://localhost:5173");
+
+    res.setHeader(
+        "Access-Control-Allow-Headers",
+        "Origin, X-Requested-With, Content-Type, Accept"
+    );
+    res.setHeader(
+        "Access-Control-Allow-Methods",
+        "GET, POST, PATCH, DELETE, OPTIONS, PUT"
+    );
+    next();
+});
 
 
 // The main page to be rendered is index.ejs. 
@@ -40,35 +58,54 @@ app.get('/', checkAuthenticated, (req, res) => {
 })
 
 
-app.get('/login', checkNotAuthenticated, (req, res) => {
-    res.render('login.ejs')
-})
+// app.get('/login', checkNotAuthenticated, (req, res) => {
+//     res.render('login.ejs')
+// })
 
-app.post('/login', checkNotAuthenticated, passport.authenticate('local', {
+app.post('/db/login', checkNotAuthenticated, passport.authenticate('local', {
     successRedirect: '/',
     failureRedirect: '/login',
     failureFlash: true
 }))
 
 
-app.get('/register', checkNotAuthenticated, (req, res) => {
-    res.render('register.ejs')
-})
+// app.get('/register', checkNotAuthenticated, (req, res) => {
+//     res.render('register.ejs')
+// })
 
-app.post('/register', checkNotAuthenticated, async(req, res) => {
+app.post('/db/register', checkNotAuthenticated, async(req, res) => {
     try{
-        const hashedPassword = await bcrypt.hash(req.body.password, 10)
-        users.push({
-            id: Date.now().toString(),
-            name: req.body.name,
-            email: req.body.email,
-            password: hashedPassword
-        })
-        res.redirect('/login')
-    } catch {
-        res.redirect('/register')
+        await client.connect();
+        const database = client.db('CampusConnect');
+        const collection = database.collection('users');
+        const { name, password, email } = req.body;
+
+        // Regular expression for RPI email
+        const rpiEmailRegex = /^[a-zA-Z0-9._%+-]+@rpi.edu$/;
+
+        // Check if email is RPI email
+        if (!rpiEmailRegex.test(rpiEmail)) {
+            res.json({ success: false, message: 'Please provide a valid RPI email.' });
+            return;
+        }
+        const currUser = await collection.findOne({ $or: [{ name }, { email }] });
+
+        if (currUser) {
+            res.json({ success: false, message: 'Username or RPI email already exists' });
+        } else {
+            const hashedPassword = await bcrypt.hash(password, 10);
+            await collection.insertOne({ name, password: hashedPassword, email, admin: 0 });
+            res.json({ success: true, message: 'User successfully registered' });
+        }
+
+        // res.redirect('/login')
+    } catch (error){
+        console.error(error);
+        res.status(500).json({ error: 'An error occurred while signing up.' });
+        // res.redirect('/register')
+    } finally {
+        await client.close();
     }
-    console.log(users)
 })
 
 app.delete('/logout', (req, res) => {
