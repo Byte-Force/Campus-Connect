@@ -1,23 +1,12 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
-.container {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    height: 100vh;
-  }
-  
-  .content {
-    margin-bottom: 20px;
-  }
-  
-  .toggle-button {
-    background-color: #eee;
-    padding: 10px 20px;
-    border: none;
-    border-radius: 4px;
-    cursor: pointer;
-  }
-  
+
+
+
+
+
+.pill {
+    @apply inline-block px-4 py-2 rounded-full bg-gray-200 text-gray-800 w-32 text-center;
+}
+
