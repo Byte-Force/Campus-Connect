@@ -1,19 +1,28 @@
-import './App.css'
-import Headers from './component/header'
-// import FirstTimeLogin from './component/firstTimeLogin'
-import SideBar from './component/sideBar'
-//import CreatePostForm from './component/createPostForm'
+import './App.css';
+
+import { BrowserRouter as Router, Route, Routes } from 'react-router-dom'; // Use Routes instead of Switch
+import Headers from './component/header';
+import SideBar from './component/sideBar';
+import FirstTimeLogin from './component/firstTimeLogin';
+import CreatePostForm from './component/createPostForm';
+import Signin from './component/signin';
+
 
 function App() {
-
   return (
-    <>
+    <Router>
       <Headers />
-      {/* <FirstTimeLogin /> */}
-      <SideBar />
-      {/* <CreatePostForm /> */}
-    </>
-  )
+      {/* <SideBar /> */}
+      <Routes>
+        {/* Define the route for Signin component */}
+        <Route path="/signin" element={<Signin />} />
+
+        {/* Other routes */}
+        <Route path="/first-time-login" element={<FirstTimeLogin />} />
+        <Route path="/create-post" element={<CreatePostForm />} />
+      </Routes>
+    </Router>
+  );
 }
 
-export default App
+export default App;
