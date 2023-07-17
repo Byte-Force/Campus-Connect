@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import ReactDOM from 'react-dom';
-import LoginPage from './component/LoginPage';
+import LoginPage from './component/Login';
 import SignUp from './component/SignUp';
 import './index.css';
 
