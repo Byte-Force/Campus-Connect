@@ -6,20 +6,12 @@ const express = require('express')
 const app = express()
 const port = 5000
 const bcrypt = require('bcrypt')
-// const passport = require('passport')
-// const flash = require('express-flash')
-// const session = require('express-session')
-const methodOverride = require('method-override')
 // const axios = require('axios');
 const {MongoClient} = require('mongodb');
 const url = 'mongodb+srv://fengj5:fHg06pjJ5ltsv0G8@cluster0.nrh8keh.mongodb.net/?retryWrites=true&w=majority';
 const client = new MongoClient(url);
 app.set("view-engine", "ejs")
 app.use(express.json());
-
-// app.use(passport.initialize())
-// app.use(passport.session())
-// app.use(methodOverride('_method'))
 
 
 app.use((req, res, next) => {
