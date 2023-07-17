@@ -5,7 +5,7 @@ function Test() {
   return (
     <>
       <h1 className="text-3xl font-bold underline text-blue-500">
-      Hello world!
+      You are successfully logged in!
     </h1>
     </>
   )
