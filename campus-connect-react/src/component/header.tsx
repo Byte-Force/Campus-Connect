@@ -1,4 +1,4 @@
-import React from 'react'
+
 import Logo from '/Users/wendyyang/Documents/GitHub/Campus-Connect/image/rmbg_logo.png';
 
 

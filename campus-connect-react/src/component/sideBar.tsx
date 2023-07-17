@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+
 import Home from "/Users/wendyyang/Documents/GitHub/Campus-Connect/image/home.png"; //Have to fix this 
 import Event from "/Users/wendyyang/Documents/GitHub/Campus-Connect/image/calendar.png";
 
