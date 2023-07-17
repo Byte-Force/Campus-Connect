@@ -4,6 +4,7 @@ if (process.env.NODE_ENV !== 'production') {
 
 const express = require('express')
 const app = express()
+const port = 5000
 const bcrypt = require('bcrypt')
 const passport = require('passport')
 const flash = require('express-flash')
@@ -21,7 +22,7 @@ initializePassport(
     id => users.find(user => user.id === id)
 )
 
-const users = []
+// const users = []
 
 app.set("view-engine", "ejs")
 app.use(express.urlencoded({ extended: false }))
@@ -66,7 +67,26 @@ app.post('/db/login', checkNotAuthenticated, passport.authenticate('local', {
     successRedirect: '/',
     failureRedirect: '/login',
     failureFlash: true
-}))
+}), async(req, res) => {
+    try {
+        await client.connect();
+        const database = client.db('CampusConnect');
+        const collection = database.collection('users');
+        const { name, password, email } = req.body;
+        const user = await collection.findOne({ name, email });
+
+        if (user && await bcrypt.compare(password, user.password)) {
+            res.json({ success: true });
+        } else {
+            res.json({ success: false, message: 'Incorrect username, RPI email, or password' });
+        }
+    } catch (error) {
+        console.error(error)
+        res.status(500).json({ error: 'An error occurred while logging in.' });
+    } finally {
+        await client.close();
+    }
+})
 
 
 // app.get('/register', checkNotAuthenticated, (req, res) => {
@@ -132,4 +152,4 @@ function checkNotAuthenticated(req, res, next){
     next()
 }
 
-app.listen(5000)
+app.listen(port, () => console.log(`Example app listening on port ${port}!`))
