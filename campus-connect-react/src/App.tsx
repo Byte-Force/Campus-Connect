@@ -9,21 +9,23 @@ import CreatePostForm from './component/createPostForm';
 
 ///Pages 
 import Signin from './pages/LoginPage';
+import SignupPage from './pages/SignupPage';
 
 function App() {
   return (
     <Router>
-      < Signin />
-      {/* <Headers /> */}
-      {/* <SideBar /> */}
-      {/* <Routes>
-       
-        <Route path="/signin" element={<Signin />} />
 
-       
+
+
+
+      <Routes>
+        <Route path="/" element={<Signin />} />
+        <Route path="/signin" element={<SignupPage />} />
+
+
         <Route path="/first-time-login" element={<FirstTimeLogin />} />
         <Route path="/create-post" element={<CreatePostForm />} />
-      </Routes> */}
+      </Routes>
     </Router>
   );
 }
