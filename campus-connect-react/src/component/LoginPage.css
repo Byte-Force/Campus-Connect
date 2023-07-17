@@ -9,19 +9,21 @@
     top:50%;
     right:240px;
     transform:translateY(-50%);
+    text-align: center;
 }
 
 .login-form label {
     display: block;
-    color: black;
+    color: #ff0008;
     font-weight: bold; /* Add this line to make the text bold */
-    margin-bottom: 20px;
+    /*margin-bottom: 20px;*/
+    font-size:24px;
+    text-align:center;
 }
 
 .login-form input {
-    width: 100%;
-    padding: 5px;
-    margin-bottom: 10px;
+    width: 80%;
+    padding: 1px;
 }
 
 .login-form button {
@@ -33,4 +35,21 @@
     border-radius: 5px;
     cursor: pointer;
     margin: 10px auto;
+    text-align: center;
+}
+
+.login-form .username-label{
+    color:#333333;
+
+}
+
+.login-form .password-label{
+    color:#333333;
+    font-size:20px;
+    text-align:center;
+}
+.login-form .username-label{
+    color:#333333;
+    font-size:20px;
+    text-align:center;
 }

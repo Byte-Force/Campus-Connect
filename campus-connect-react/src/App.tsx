@@ -12,7 +12,7 @@ const App: React.FC = () => {
             <Link to="/">Login</Link>
           </li>
           <li>
-            <Link to="/signup">Sign Up</Link>
+            {/*<Link to="/signup">Sign Up</Link>*/}
           </li>
         </ul>
       </div>
