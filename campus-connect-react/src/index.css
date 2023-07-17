@@ -3,6 +3,10 @@
 @tailwind utilities;
 
 
+
+
+
 .pill {
     @apply inline-block px-4 py-2 rounded-full bg-gray-200 text-gray-800 w-32 text-center;
 }
+
