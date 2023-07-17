@@ -1,5 +1,6 @@
 
 import Logo from '../image/rmbg_logo.png';
+import { Link } from 'react-router-dom';
 
 
 /* 
@@ -16,9 +17,9 @@ export default function Headers() {
             <nav>
                 <ul className="flex space-x-4 mr-10">
                     <li>
-                        <a href="#" className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600">
-                            Sign Up
-                        </a>
+                        <Link to="/signin" className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600">
+                            Sign In
+                        </Link>
                     </li>
                     <li>
                         <a href="#" className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600">
