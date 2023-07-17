@@ -23,7 +23,6 @@ const LoginPage: React.FC = () => {
 
   return (
     <div>
-      <h1>Login Page</h1>
       <button>Sign Up</button>
       <button>About</button>
       <button>Contact</button>
