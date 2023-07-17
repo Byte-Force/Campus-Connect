@@ -5,6 +5,7 @@ import { BrowserRouter as Router, Route, Routes } from 'react-router-dom'; // Us
 //import SideBar from './component/sideBar';
 import FirstTimeLogin from './component/firstTimeLogin';
 import CreatePostForm from './component/createPostForm';
+import HomePage from "./pages/HomePage.tsx";
 // import Signin from './component/signin';
 
 ///Pages 
@@ -21,8 +22,7 @@ function App() {
       <Routes>
         <Route path="/" element={<Signin />} />
         <Route path="/signin" element={<SignupPage />} />
-
-
+          <Route path="/home" element={<HomePage/>} />
         <Route path="/first-time-login" element={<FirstTimeLogin />} />
         <Route path="/create-post" element={<CreatePostForm />} />
       </Routes>
