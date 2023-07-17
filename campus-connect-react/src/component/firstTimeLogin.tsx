@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import { useState } from "react";
 
 const Grid = () => {
     const [selectedPills, setSelectedPills] = useState<number[]>([]);
@@ -31,7 +31,7 @@ const Grid = () => {
 
 export default function FirstTimeLogin() {
     // now is a hardcoded string later we will get the user name from backend 
-    const [usrname, setusrname] = useState("Wendy");
+    const [usrname] = useState("Wendy");
 
     return (
         <div className="text-center">
