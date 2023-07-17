@@ -1,6 +1,6 @@
 
-import Home from "/Users/wendyyang/Documents/GitHub/Campus-Connect/image/home.png"; //Have to fix this 
-import Event from "/Users/wendyyang/Documents/GitHub/Campus-Connect/image/calendar.png";
+import Home from "../image/home.png"; //Have to fix this 
+import Event from "../image/calendar.png";
 
 
 const categories = ["IT", "Computer Science", "Events"];
