@@ -1,16 +1,36 @@
-.login-page {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-  }
-  
-  .button-container {
-    display: flex;
-    justify-content: flex-end;
+.login-form {
+    background-color: #f2f2f2;
+    color: #333;
+    padding: 20px;
+    border-radius: 5px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    width: 300px;
+    position:fixed;
+    top:50%;
+    right:240px;
+    transform:translateY(-50%);
+}
+
+.login-form label {
+    display: block;
+    color: black;
+    font-weight: bold; /* Add this line to make the text bold */
     margin-bottom: 20px;
-  }
-  
-  .upper-right {
-    margin-left: 10px;
-  }
-  
+}
+
+.login-form input {
+    width: 100%;
+    padding: 5px;
+    margin-bottom: 10px;
+}
+
+.login-form button {
+    width: 50%;
+    padding: 10px;
+    background-color: #ff0008;
+    color: #fff;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    margin: 10px auto;
+}

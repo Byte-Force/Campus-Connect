@@ -14,7 +14,7 @@ const App: React.FC = () => {
           {showSignUp ? <SignUp /> : <LoginPage />}
         </div>
         <button className="toggle-button" onClick={() => setShowSignUp(!showSignUp)}>
-          {showSignUp ? 'Go to Login' : 'Go to Sign Up'}
+          {showSignUp ? 'Login' : 'Sign Up'}
         </button>
       </div>
     </React.StrictMode>

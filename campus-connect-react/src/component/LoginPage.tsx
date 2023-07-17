@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import './LoginPage.css'; // Import the CSS file
 
 const LoginPage: React.FC = () => {
   const [username, setUsername] = useState('');
@@ -22,25 +23,26 @@ const LoginPage: React.FC = () => {
   };
 
   return (
-    <div>
-      <button>Sign Up</button>
-      <button>About</button>
-      <button>Contact</button>
-
-      <form onSubmit={handleLogin}>
-        <label>
-          Username:
-          <input type="text" value={username} onChange={handleUsernameChange} />
-        </label>
-        <br />
-        <label>
-          Password:
-          <input type="password" value={password} onChange={handlePasswordChange} />
-        </label>
-        <br />
-        <button type="submit">Login</button>
-      </form>
-    </div>
+      <div className="login-form"> {/* Apply the 'login-form' class */}
+        <form onSubmit={handleLogin}>
+          <label style={{ display: 'block' }}>
+            Login:
+          </label>
+          <label>
+            Username:
+            <br />
+            <input type="text" value={username} onChange={handleUsernameChange} />
+          </label>
+          <br />
+          <label>
+            Password:
+            <br />
+            <input type="password" value={password} onChange={handlePasswordChange} />
+          </label>
+          <br />
+          <button type="submit">Login</button>
+        </form>
+      </div>
   );
 };
 
