@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import { useNavigate } from 'react-router-dom';
 
 
 
@@ -22,6 +23,8 @@ const Tag = () => {
 // ------------ implement Label funcationality  ------
 
 const PostForm = () => {
+    const navigate = useNavigate();
+
     const [title, setTitle] = useState('');
     const [body, setBody] = useState('');
 
@@ -43,6 +46,7 @@ const PostForm = () => {
         // Reset the form after submission
         setTitle('');
         setBody('');
+        navigate('/home');
     };
 
     return (
