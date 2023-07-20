@@ -4,6 +4,7 @@ import { BrowserRouter as Router, Route, Routes } from 'react-router-dom'; // Us
 
 import HomePage from "./pages/HomePage.tsx";
 import FirstTimeLoginPage from './pages/FirstTimeLoginPage.tsx';
+import SignUp from './pages/SignupPage.tsx';
 
 
 ///Pages 
@@ -14,7 +15,7 @@ import CreatePostPage from './pages/CreatePostPage.tsx';
 function App() {
   return (
     <Router>
-
+      <SignUp />
 
 
 
