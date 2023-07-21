@@ -6,7 +6,7 @@ import { BrowserRouter as Router, Route, Routes } from 'react-router-dom'; // Us
 import FirstTimeLogin from './component/firstTimeLogin';
 import CreatePostForm from './component/createPostForm';
 import HomePage from "./pages/HomePage.tsx";
-import LikeButton from './component/likebutton.tsx';
+//import LikeButton from './component/likebutton.tsx';
 // import Signin from './component/signin';
 ///Pages 
 import Signin from './pages/LoginPage';
