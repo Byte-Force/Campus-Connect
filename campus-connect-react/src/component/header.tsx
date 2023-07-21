@@ -13,6 +13,7 @@ export default function Headers() {
             <div className="flex items-center">
                 <img src={Logo} alt="Logo" className="w-20 h-20 ml-6" />
 
+
             </div>
             <nav>
                 <ul className="flex space-x-4 mr-10">
