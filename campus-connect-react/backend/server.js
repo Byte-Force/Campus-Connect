@@ -3,24 +3,19 @@ if (process.env.NODE_ENV !== 'production') {
 }
 
 const express = require('express')
+const bodyParser = require('body-parser');
 const app = express()
 const port = 3000
 const bcrypt = require('bcrypt')
+const { ObjectId } = require('mongodb');
 // const axios = require('axios');
 const { MongoClient } = require('mongodb');
 const url = 'mongodb+srv://fengj5:fHg06pjJ5ltsv0G8@cluster0.nrh8keh.mongodb.net/?retryWrites=true&w=majority';
 const client = new MongoClient(url);
 app.set("view-engine", "ejs")
 app.use(express.json());
-app.use(bodyParser.json());
 const cors = require('cors'); // Place this with other requires (like 'path' and 'express')
-
-mongoose.connect('mongodb+srv://fengj5:fHg06pjJ5ltsv0G8@cluster0.nrh8keh.mongodb.net/?retryWrites=true&w=majority', {
-    useNewUrlParser: true,
-    useUnifiedTopology: true,
-});
-
-
+app.use(bodyParser.json()); // Middleware to parse incoming JSON data
 
 app.use((req, res, next) => {
     res.setHeader("Access-Control-Allow-Origin", "http://localhost:5173");
@@ -106,37 +101,6 @@ app.post('/db/register', async(req, res) => {
   }
 })
 
-// Define the Post schema
-const postSchema = new mongoose.Schema({
-    userId: { type: mongoose.Schema.Types.ObjectId, required: true },
-    likes: { type: Number, default: 0 },
-    postId: { type: mongoose.Schema.Types.ObjectId, required: true },
-});
-const Post = mongoose.model('Post', postSchema);
-
-// Endpoint for liking a post
-app.post('/db/like', async (req, res) => {
-    const { userId, postId } = req.body;
-
-    try {
-        // Find the post in the database
-        const post = await Post.findOne({ postId });
-
-        if (!post) {
-            return res.status(404).json({ message: 'Post not found' });
-        }
-
-        // Increment the likes count and save the updated post
-        post.likes += 1;
-        await post.save();
-
-        return res.status(200).json({ message: 'Post liked successfully' });
-    } catch (err) {
-        return res.status(500).json({ message: 'An error occurred', error: err });
-    }
-});
-
-
 // Create a new post to the database
 app.post('/db/posts', async (req, res) => {
     try {
@@ -170,6 +134,46 @@ app.get('/db/posts', async (req, res) => {
     }
 });
 
+// Endpoint for liking a post
+app.post('/db/like', async (req, res) => {
+  const { userId, postId } = req.body;
+  // console log the userId and postId
+  try {
+      // Grab the postID from the database collection
+      await client.connect();
+      const database = client.db('CampusConnect');
+      const postsCollection = database.collection('post');
 
+      // Find the post and check if the post exists
+      const parsedPostId = parseInt(postId);
+      const parsedUserId = parseInt(userId);
+      const existPost = await postsCollection.findOne({ "postid": parsedPostId });
+      if (!existPost) {
+        return res.status(404).json({ error: 'Post not found.' });
+      }
+
+      // Check if the user has already liked the post
+      if (existPost.likes.includes(parsedUserId)) {
+        return res.status(400).json({ error: 'User has already liked this post.' });
+      }
+
+      // Step 3: Update the post with the like count and userId
+      const updatedPost = await postsCollection.findOneAndUpdate(
+        { "postid": parsedPostId },
+        {
+          $inc: { countLikes: 1 },
+          $push: { likes: parsedUserId },
+        },
+        { returnOriginal: false }
+      );
+      res.status(200).json({ message: 'Post liked successfully' });
+
+    } catch (error) {
+      console.error('Error occurred:', error);
+      res.status(500).json({ error: 'Something went wrong.' });
+    } finally {
+      await client.close();
+  }
+});
 
 app.listen(port, () => console.log(`Example app listening on port ${port}!`))
