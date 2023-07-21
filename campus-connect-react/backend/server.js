@@ -4,7 +4,7 @@ if (process.env.NODE_ENV !== 'production') {
 
 const express = require('express')
 const app = express()
-const port = 5000
+const port = 3000
 const bcrypt = require('bcrypt')
 // const axios = require('axios');
 const {MongoClient} = require('mongodb');
@@ -61,7 +61,7 @@ app.post('/db/register', async(req, res) => {
       const isRpiEmail = rpiEmail.endsWith('@rpi.edu');
 
       if (!isRpiEmail) {
-        return res.status(400).json({ error: 'Please provide a valid RPI email address.' });
+        res.json({ success: false, message: 'Please provide a valid RPI email address' });
       }
 
       const existUser = await collection.findOne({ $or: [{ username }, { rpiEmail }] });
@@ -70,6 +70,7 @@ app.post('/db/register', async(req, res) => {
           res.json({ success: false, message: 'Username or RPI email already exists' });
       } else {
           const hashedPassword = await bcrypt.hash(password, 10);
+
           // Create the new user object with the required fields
           const newUser = {
             user_id: userCount + 1,
@@ -82,10 +83,12 @@ app.post('/db/register', async(req, res) => {
           // Insert the new user into the database
           await userCollection.insertOne(newUser);
 
-          res.json({success: true, message: 'User successfully registered'});
+          // Close the database connection
+          client.close();
+          res.status(201).json({ message: 'User registered successfully!', user: newUser });
       }
-  } catch (error){
-      console.error(error);
+  } catch (err){
+      console.error(err);
       res.status(500).json({ error: 'An error occurred while signing up.' });
   } finally {
       await client.close();
