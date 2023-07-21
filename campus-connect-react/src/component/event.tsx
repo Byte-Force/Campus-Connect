@@ -23,7 +23,7 @@ const staticEventData: Event[] = [
 ];
 
 const EventBoard = () => {
-  const [events, setEvents] = React.useState(staticEventData);
+  const [events] = React.useState(staticEventData);
   return (
     <ul className="border-white m-1 p-0.5 bg-gray-200 rounded-sm ">
       <h1 className="text-2xl font-bold mb-4">Upcoming Events</h1>
