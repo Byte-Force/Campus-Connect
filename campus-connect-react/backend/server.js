@@ -135,7 +135,10 @@ app.post('/db/posts', async (req, res) => {
         const database = client.db('CampusConnect');
         const collection = database.collection('post');
         const { title, body } = req.body;
-        await collection.insertOne({ title, body, likes: [], comments: [], date: new Date(), countLikes: 0, countComments: 0 });
+        //generate a new post id by counting the number of post in the database and then incrementing by 1 
+        const postCount = await collection.countDocuments();
+        const postId = postCount + 1;
+        await collection.insertOne({ title, body, likes: [], comments: [], date: new Date(), countLikes: 0, countComments: 0, postid: postId });
         res.json({ success: true, message: 'User post successfully' });
     } catch (error) {
         console.error(error);
@@ -161,6 +164,27 @@ app.get('/db/posts', async (req, res) => {
     }
 });
 
+// Endpoint to retrieve a specific post along with its comments
+app.get('/db/posts/:postId', async (req, res) => {
+    const postId = req.params.postId;
+    try {
+        console.log('postId:', postId);
+        await client.connect();
+        const database = client.db('CampusConnect');
+        const collection = database.collection('post');
+        const post = await collection.findOne({ "postid": parseInt(postId) });
+
+
+        if (post) {
+            res.json({ success: true, post });
+        } else {
+            res.status(404).json({ success: false, message: 'Post not found' });
+        }
+    } catch (error) {
+        console.error('Error retrieving post:', error);
+        res.status(500).json({ success: false, message: 'Error retrieving post' });
+    }
+});
 
 
 app.listen(port, () => console.log(`Example app listening on port ${port}!`))
