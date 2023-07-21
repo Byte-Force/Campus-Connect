@@ -91,59 +91,6 @@ app.post('/db/register', async(req, res) => {
     }
 })
 
-// Define the Post schema
-const postSchema = new mongoose.Schema({
-    userId: { type: mongoose.Schema.Types.ObjectId, required: true },
-    likes: { type: Number, default: 0 },
-    postId: { type: mongoose.Schema.Types.ObjectId, required: true },
-  });
-const Post = mongoose.model('Post', postSchema);
 
-// Endpoint for liking a post
-app.post('/db/like', async (req, res) => {
-  const { userId, postId } = req.body;
-
-  try {
-    // Find the post in the database
-    const post = await Post.findOne({ postId });
-
-    if (!post) {
-      return res.status(404).json({ message: 'Post not found' });
-    }
-
-    // Increment the likes count and save the updated post
-    post.likes += 1;
-    await post.save();
-
-    return res.status(200).json({ message: 'Post liked successfully' });
-  } catch (err) {
-    return res.status(500).json({ message: 'An error occurred', error: err });
-  }
-});
-
-// Define the Comment schema
-const commentSchema = new mongoose.Schema({
-    userId: { type: mongoose.Schema.Types.ObjectId, required: true },
-    postId: { type: mongoose.Schema.Types.ObjectId, required: true },
-    time: { type: Date, default: Date.now },
-    content: { type: String, required: true },
-  });
-
-const Comment = mongoose.model('Comment', commentSchema);
-
-// Endpoint for adding a comment
-app.post('/comment', async (req, res) => {
-  const { userId, postId, content } = req.body;
-
-  try {
-    // Create a new comment and save it to the database
-    const comment = new Comment({ userId, postId, content });
-    await comment.save();
-
-    return res.status(200).json({ message: 'Comment added successfully' });
-  } catch (err) {
-    return res.status(500).json({ message: 'An error occurred', error: err });
-  }
-});
 
 app.listen(port, () => console.log(`Example app listening on port ${port}!`))
