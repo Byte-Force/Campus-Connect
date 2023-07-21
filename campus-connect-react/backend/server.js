@@ -55,7 +55,8 @@ app.post('/db/register', async(req, res) => {
       await client.connect();
       const database = client.db('CampusConnect');
       const collection = database.collection('users');
-      const { username, password, rpiEmail } = req.body;
+      const userCount = await collection.countDocuments();
+      const { userName, password, rpiEmail } = req.body;
 
       // Simple check for RPI email domain
       const isRpiEmail = rpiEmail.endsWith('@rpi.edu');
@@ -64,7 +65,7 @@ app.post('/db/register', async(req, res) => {
         res.json({ success: false, message: 'Please provide a valid RPI email address' });
       }
 
-      const existUser = await collection.findOne({ $or: [{ username }, { rpiEmail }] });
+      const existUser = await collection.findOne({ $or: [{ userName }, { rpiEmail }] });
 
       if (existUser) {
           res.json({ success: false, message: 'Username or RPI email already exists' });
@@ -81,7 +82,7 @@ app.post('/db/register', async(req, res) => {
           };
 
           // Insert the new user into the database
-          await userCollection.insertOne(newUser);
+          await collection.insertOne(newUser);
 
           // Close the database connection
           client.close();
@@ -90,8 +91,6 @@ app.post('/db/register', async(req, res) => {
   } catch (err){
       console.error(err);
       res.status(500).json({ error: 'An error occurred while signing up.' });
-  } finally {
-      await client.close();
   }
 })
 
