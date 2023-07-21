@@ -51,35 +51,45 @@ app.post('/db/login', async(req, res) => {
 })
 
 app.post('/db/register', async(req, res) => {
-    try{
-        await client.connect();
-        const database = client.db('CampusConnect');
-        const collection = database.collection('users');
-        const { name, password, email } = req.body;
+  try{
+      await client.connect();
+      const database = client.db('CampusConnect');
+      const collection = database.collection('users');
+      const { username, password, rpiEmail } = req.body;
 
-        // Regular expression for RPI email
-        const rpiEmailRegex = /^[a-zA-Z0-9._%+-]+@rpi.edu$/;
+      // Simple check for RPI email domain
+      const isRpiEmail = rpiEmail.endsWith('@rpi.edu');
 
-        // Check if email is RPI email
-        if (!rpiEmailRegex.test(email)) {
-            res.json({ success: false, message: 'Please provide a valid RPI email.' });
-            return;
-        }
-        const currUser = await collection.findOne({ $or: [{ name }, { email }] });
+      if (!isRpiEmail) {
+        return res.status(400).json({ error: 'Please provide a valid RPI email address.' });
+      }
 
-        if (currUser) {
-            res.json({ success: false, message: 'Username or RPI email already exists' });
-        } else {
-            const hashedPassword = await bcrypt.hash(password, 10);
-            await collection.insertOne({name, password: hashedPassword, email, admin: 0});
-            res.json({success: true, message: 'User successfully registered'});
-        }
-    } catch (error){
-        console.error(error);
-        res.status(500).json({ error: 'An error occurred while signing up.' });
-    } finally {
-        await client.close();
-    }
+      const existUser = await collection.findOne({ $or: [{ username }, { rpiEmail }] });
+
+      if (existUser) {
+          res.json({ success: false, message: 'Username or RPI email already exists' });
+      } else {
+          const hashedPassword = await bcrypt.hash(password, 10);
+          // Create the new user object with the required fields
+          const newUser = {
+            user_id: userCount + 1,
+            userName,
+            rpiEmail,
+            password: hashedPassword,
+            admin: 0
+          };
+
+          // Insert the new user into the database
+          await userCollection.insertOne(newUser);
+
+          res.json({success: true, message: 'User successfully registered'});
+      }
+  } catch (error){
+      console.error(error);
+      res.status(500).json({ error: 'An error occurred while signing up.' });
+  } finally {
+      await client.close();
+  }
 })
 
 app.listen(port, () => console.log(`Example app listening on port ${port}!`))
