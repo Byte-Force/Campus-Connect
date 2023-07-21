@@ -5,8 +5,6 @@ if (process.env.NODE_ENV !== 'production') {
 const express = require('express')
 const app = express()
 const port = 3000
-const bodyParser = require('body-parser');
-const mongoose = require('mongoose');
 const bcrypt = require('bcrypt')
 // const axios = require('axios');
 const { MongoClient } = require('mongodb');
@@ -65,36 +63,47 @@ app.post('/db/login', async (req, res) => {
     }
 })
 
-app.post('/db/register', async (req, res) => {
-    try {
-        await client.connect();
-        const database = client.db('CampusConnect');
-        const collection = database.collection('users');
-        const { name, password, email } = req.body;
 
-        // Regular expression for RPI email
-        const rpiEmailRegex = /^[a-zA-Z0-9._%+-]+@rpi.edu$/;
+app.post('/db/register', async(req, res) => {
+  try{
+      await client.connect();
+      const database = client.db('CampusConnect');
+      const collection = database.collection('users');
+      const userCount = await collection.countDocuments();
+      const { userName, password, rpiEmail } = req.body;
 
-        // Check if email is RPI email
-        if (!rpiEmailRegex.test(email)) {
-            res.json({ success: false, message: 'Please provide a valid RPI email.' });
-            return;
-        }
-        const currUser = await collection.findOne({ $or: [{ name }, { email }] });
+      // Simple check for RPI email domain
+      const isRpiEmail = rpiEmail.endsWith('@rpi.edu');
+      if (!isRpiEmail) {
+        res.json({ success: false, message: 'Please provide a valid RPI email address' });
+      }
+    
+      const existUser = await collection.findOne({ $or: [{ userName }, { rpiEmail }] });
+      if (existUser) {
+          res.json({ success: false, message: 'Username or RPI email already exists' });
+      } else {
+          const hashedPassword = await bcrypt.hash(password, 10);
 
-        if (currUser) {
-            res.json({ success: false, message: 'Username or RPI email already exists' });
-        } else {
-            const hashedPassword = await bcrypt.hash(password, 10);
-            await collection.insertOne({ name, password: hashedPassword, email, admin: 0 });
-            res.json({ success: true, message: 'User successfully registered' });
-        }
-    } catch (error) {
-        console.error(error);
-        res.status(500).json({ error: 'An error occurred while signing up.' });
-    } finally {
-        await client.close();
-    }
+          // Create the new user object with the required fields
+          const newUser = {
+            user_id: userCount + 1,
+            userName,
+            rpiEmail,
+            password: hashedPassword,
+            admin: 0
+          };
+
+          // Insert the new user into the database
+          await collection.insertOne(newUser);
+
+          // Close the database connection
+          client.close();
+          res.status(201).json({ message: 'User registered successfully!', user: newUser });
+      }
+  } catch (err){
+      console.error(err);
+      res.status(500).json({ error: 'An error occurred while signing up.' });
+  }
 })
 
 // Define the Post schema
