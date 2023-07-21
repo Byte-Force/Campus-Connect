@@ -6,7 +6,7 @@ import HomePage from "./pages/HomePage.tsx";
 //import LikeButton from './component/likebutton.tsx';
 // import Signin from './component/signin';
 import FirstTimeLoginPage from './pages/FirstTimeLoginPage.tsx';
-
+import EventBoard from './component/event.tsx';
 
 
 ///Pages 
@@ -20,6 +20,9 @@ function App() {
           {/* <div className="like-button-container">
           <LikeButton />
         </div> */}
+        {/* {<div className="event-board-container">
+          <EventBoard />
+          </div>} */}
 
 
       <Routes>
