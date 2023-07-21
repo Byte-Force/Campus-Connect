@@ -1,8 +1,11 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 
 const Login: React.FC = () => {
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
+
+  const navigate = useNavigate();
 
   const handleUsernameChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setUsername(e.target.value);
@@ -12,13 +15,40 @@ const Login: React.FC = () => {
     setPassword(e.target.value);
   };
 
-  const handleLogin = (e: React.FormEvent<HTMLFormElement>) => {
+  const handleLogin = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
+
     // Perform login logic here using username and password
     console.log('Logging in with:', username, password);
-    // Clear form fields after login
-    setUsername('');
-    setPassword('');
+
+    // Send a POST request to your backend
+    const response = await fetch('http://localhost:3000/db/login', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ name: username, password, email: username + '@rpi.edu' }), // assuming username is the part before '@rpi.edu'
+    });
+
+    // Check if the login was successful
+    if (response.ok) {
+      const data = await response.json();
+      if (data.success) {
+        console.log('Login successful');
+        // Clear form fields after login
+        setUsername('');
+        setPassword('');
+        // TODO: Store the user's session information
+        // Navigate to the HomePage
+        navigate('/home'); // Replace '/home' with the path of your HomePage
+      } else {
+        console.log('Login failed:', data.message);
+        // TODO: Handle login failure
+      }
+    } else {
+      console.log('Login failed');
+      // TODO: Handle login failure
+    }
   };
 
   return (

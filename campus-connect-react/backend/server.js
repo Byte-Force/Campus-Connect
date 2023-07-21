@@ -7,11 +7,19 @@ const app = express()
 const port = 3000
 const bcrypt = require('bcrypt')
 // const axios = require('axios');
-const {MongoClient} = require('mongodb');
+const { MongoClient } = require('mongodb');
 const url = 'mongodb+srv://fengj5:fHg06pjJ5ltsv0G8@cluster0.nrh8keh.mongodb.net/?retryWrites=true&w=majority';
 const client = new MongoClient(url);
 app.set("view-engine", "ejs")
 app.use(express.json());
+app.use(bodyParser.json());
+const cors = require('cors'); // Place this with other requires (like 'path' and 'express')
+
+mongoose.connect('mongodb+srv://fengj5:fHg06pjJ5ltsv0G8@cluster0.nrh8keh.mongodb.net/?retryWrites=true&w=majority', {
+    useNewUrlParser: true,
+    useUnifiedTopology: true,
+});
+
 
 
 app.use((req, res, next) => {
@@ -28,8 +36,13 @@ app.use((req, res, next) => {
     next();
 });
 
+// app.use(cors({
+//     origin: 'http://localhost:5173',
+//     methods: 'GET, POST, PATCH, DELETE, OPTIONS, PUT',
+// }));
 
-app.post('/db/login', async(req, res) => {
+
+app.post('/db/login', async (req, res) => {
     try {
         await client.connect();
         const database = client.db('CampusConnect');
@@ -50,6 +63,7 @@ app.post('/db/login', async(req, res) => {
     }
 })
 
+
 app.post('/db/register', async(req, res) => {
   try{
       await client.connect();
@@ -60,13 +74,11 @@ app.post('/db/register', async(req, res) => {
 
       // Simple check for RPI email domain
       const isRpiEmail = rpiEmail.endsWith('@rpi.edu');
-
       if (!isRpiEmail) {
         res.json({ success: false, message: 'Please provide a valid RPI email address' });
       }
-
+    
       const existUser = await collection.findOne({ $or: [{ userName }, { rpiEmail }] });
-
       if (existUser) {
           res.json({ success: false, message: 'Username or RPI email already exists' });
       } else {
@@ -93,5 +105,71 @@ app.post('/db/register', async(req, res) => {
       res.status(500).json({ error: 'An error occurred while signing up.' });
   }
 })
+
+// Define the Post schema
+const postSchema = new mongoose.Schema({
+    userId: { type: mongoose.Schema.Types.ObjectId, required: true },
+    likes: { type: Number, default: 0 },
+    postId: { type: mongoose.Schema.Types.ObjectId, required: true },
+});
+const Post = mongoose.model('Post', postSchema);
+
+// Endpoint for liking a post
+app.post('/db/like', async (req, res) => {
+    const { userId, postId } = req.body;
+
+    try {
+        // Find the post in the database
+        const post = await Post.findOne({ postId });
+
+        if (!post) {
+            return res.status(404).json({ message: 'Post not found' });
+        }
+
+        // Increment the likes count and save the updated post
+        post.likes += 1;
+        await post.save();
+
+        return res.status(200).json({ message: 'Post liked successfully' });
+    } catch (err) {
+        return res.status(500).json({ message: 'An error occurred', error: err });
+    }
+});
+
+
+// Create a new post to the database
+app.post('/db/posts', async (req, res) => {
+    try {
+        await client.connect();
+        const database = client.db('CampusConnect');
+        const collection = database.collection('post');
+        const { title, body } = req.body;
+        await collection.insertOne({ title, body, likes: [], comments: [], date: new Date(), countLikes: 0, countComments: 0 });
+        res.json({ success: true, message: 'User post successfully' });
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ error: 'An error occurred while posting' });
+    } finally {
+        await client.close();
+    }
+});
+
+
+app.get('/db/posts', async (req, res) => {
+    try {
+        await client.connect();
+        const database = client.db('CampusConnect');
+        const collection = database.collection('post');
+        const posts = await collection.find({}).toArray();
+        res.json({ success: true, posts });
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ error: 'An error occurred while getting posts' });
+    } finally {
+        await client.close();
+    }
+});
+
+
 
 app.listen(port, () => console.log(`Example app listening on port ${port}!`))
