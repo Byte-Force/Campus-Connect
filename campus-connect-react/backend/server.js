@@ -161,7 +161,7 @@ app.post('/db/like', async (req, res) => {
       const updatedPost = await postsCollection.findOneAndUpdate(
         { "postid": parsedPostId },
         {
-          $inc: { countLikes: 1 },
+          $inc: { "countLikes": 1 },
           $push: { likes: parsedUserId },
         },
         { returnOriginal: false }
