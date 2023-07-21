@@ -27,7 +27,7 @@ const PostForm = () => {
 
     const [title, setTitle] = useState('');
     const [body, setBody] = useState('');
-    const [isSubmitting, setIsSubmitting] = useState(false); // Add this state
+    //const [isSubmitting, setIsSubmitting] = useState(false); // Add this state
 
     const handleTitleChange = (e: { target: { value: React.SetStateAction<string>; }; }) => {
         setTitle(e.target.value);
@@ -41,7 +41,7 @@ const PostForm = () => {
 
     const handleSubmit = async (e: { preventDefault: () => void; }) => {
         e.preventDefault();
-        setIsSubmitting(true); // Set the isSubmitting state to true
+        //setIsSubmitting(true); // Set the isSubmitting state to true
         try {
             const response = await fetch('http://localhost:3000/db/posts', {
                 method: 'POST',
@@ -65,7 +65,7 @@ const PostForm = () => {
         console.log('Title:', title);
         console.log('Body:', body);
 
-        setIsSubmitting(false); // Reset the isSubmitting state to false after the fetch is complete
+        //setIsSubmitting(false); // Reset the isSubmitting state to false after the fetch is complete
         // Reset the form after submission
         setTitle('');
         setBody('');
