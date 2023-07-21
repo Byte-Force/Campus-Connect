@@ -31,7 +31,7 @@ const SignUp = () => {
       if (data.success) {
         console.log('Sign-up successful');
         // After successful sign-up, navigate to the HomePage
-        navigate('/home'); // Replace '/home' with the path of your HomePage
+        navigate('/first-time-login');  // Replace '/home' with the path of your HomePage
       } else {
         console.log('Sign-up failed:', data.message);
         // TODO: Handle sign-up failure

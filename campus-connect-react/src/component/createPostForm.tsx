@@ -1,4 +1,5 @@
-import React, { useState } from "react";
+import { useState } from "react";
+import { useNavigate } from 'react-router-dom';
 
 
 
@@ -22,8 +23,11 @@ const Tag = () => {
 // ------------ implement Label funcationality  ------
 
 const PostForm = () => {
+    const navigate = useNavigate();
+
     const [title, setTitle] = useState('');
     const [body, setBody] = useState('');
+    //const [isSubmitting, setIsSubmitting] = useState(false); // Add this state
 
     const handleTitleChange = (e: { target: { value: React.SetStateAction<string>; }; }) => {
         setTitle(e.target.value);
@@ -33,17 +37,41 @@ const PostForm = () => {
         setBody(e.target.value);
     };
 
-    const handleSubmit = (e: { preventDefault: () => void; }) => {
-        e.preventDefault();
 
+
+    const handleSubmit = async (e: { preventDefault: () => void; }) => {
+        e.preventDefault();
+        //setIsSubmitting(true); // Set the isSubmitting state to true
+        try {
+            const response = await fetch('http://localhost:3000/db/posts', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ title, body }),
+            });
+
+            // Handle the response here (e.g., show success message, redirect, etc.)
+            if (response.ok) {
+                console.log('Post created successfully!');
+                // Additional logic here, e.g., redirect to another page
+            } else {
+                console.error('Failed to create post.');
+            }
+        } catch (error) {
+            console.error('Error creating post:', error);
+        }
         // Here, you can implement the logic to post the data to your backend or do anything you need with the title and body values.
         console.log('Title:', title);
         console.log('Body:', body);
 
+        //setIsSubmitting(false); // Reset the isSubmitting state to false after the fetch is complete
         // Reset the form after submission
         setTitle('');
         setBody('');
+        navigate('/home');
     };
+
 
     return (
         <div>

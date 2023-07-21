@@ -1,11 +1,12 @@
 import Headers from '../component/header';
-import Test from "../component/Test.tsx";
+import Home from '../component/Home';
 
 export default function HomePage() {
   return (
     <>
       <Headers />
-        <Test />
+      <Home />
+
 
     </>
   );
