@@ -135,7 +135,7 @@ app.post('/db/posts', async (req, res) => {
         const database = client.db('CampusConnect');
         const collection = database.collection('post');
         const { title, body } = req.body;
-        await collection.insertOne({ title, body, likes: [], comments: [], date: new Date() });
+        await collection.insertOne({ title, body, likes: [], comments: [], date: new Date(), countLikes: 0, countComments: 0 });
         res.json({ success: true, message: 'User post successfully' });
     } catch (error) {
         console.error(error);
