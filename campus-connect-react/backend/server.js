@@ -121,6 +121,29 @@ app.post('/db/like', async (req, res) => {
     }
   });
 
+// Define the Comment schema
+const commentSchema = new mongoose.Schema({
+    userId: { type: mongoose.Schema.Types.ObjectId, required: true },
+    postId: { type: mongoose.Schema.Types.ObjectId, required: true },
+    time: { type: Date, default: Date.now },
+    content: { type: String, required: true },
+  });
 
+  const Comment = mongoose.model('Comment', commentSchema);
+
+  // Endpoint for adding a comment
+  app.post('/comment', async (req, res) => {
+    const { userId, postId, content } = req.body;
+  
+    try {
+      // Create a new comment and save it to the database
+      const comment = new Comment({ userId, postId, content });
+      await comment.save();
+  
+      return res.status(200).json({ message: 'Comment added successfully' });
+    } catch (err) {
+      return res.status(500).json({ message: 'An error occurred', error: err });
+    }
+  });
 
 app.listen(port, () => console.log(`Example app listening on port ${port}!`))
