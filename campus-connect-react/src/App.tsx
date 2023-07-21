@@ -18,9 +18,6 @@ function App() {
           {/* <div className="like-button-container">
           <LikeButton />
         </div> */}
-
-
-
       <Routes>
         <Route path="/" element={<Signin />} />
         <Route path="/signin" element={<SignupPage />} />
