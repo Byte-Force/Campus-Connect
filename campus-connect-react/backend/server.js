@@ -12,15 +12,13 @@ const url = 'mongodb+srv://fengj5:fHg06pjJ5ltsv0G8@cluster0.nrh8keh.mongodb.net/
 const client = new MongoClient(url);
 app.set("view-engine", "ejs")
 app.use(express.json());
-app.use(bodyParser.json());
+// app.use(bodyParser.json());
 const cors = require('cors'); // Place this with other requires (like 'path' and 'express')
 
-mongoose.connect('mongodb+srv://fengj5:fHg06pjJ5ltsv0G8@cluster0.nrh8keh.mongodb.net/?retryWrites=true&w=majority', {
-    useNewUrlParser: true,
-    useUnifiedTopology: true,
-});
-
-
+// mongoose.connect('mongodb+srv://fengj5:fHg06pjJ5ltsv0G8@cluster0.nrh8keh.mongodb.net/?retryWrites=true&w=majority', {
+//     useNewUrlParser: true,
+//     useUnifiedTopology: true,
+// });
 
 app.use((req, res, next) => {
     res.setHeader("Access-Control-Allow-Origin", "http://localhost:5173");
@@ -138,6 +136,42 @@ app.get('/db/posts', async (req, res) => {
     } finally {
         await client.close();
     }
+});
+
+// Endpoint for commenting a post
+app.post('/db/comment', async (req, res) => {
+  const { commentBody, postId } = req.body;
+  // console log the userId and postId
+  try {
+      // Grab the postID from the database collection
+      await client.connect();
+      const database = client.db('CampusConnect');
+      const postsCollection = database.collection('post');
+
+      // Find the post and check if the post exists
+      const parsedPostId = parseInt(postId);
+      const existPost = await postsCollection.findOne({ "postid": parsedPostId });
+      if (!existPost) {
+        return res.status(404).json({ error: 'Post not found.' });
+      }
+
+      // Update the post with the comment content and increment the comment count
+      const updatedPost = await postsCollection.findOneAndUpdate(
+        { "postid": parsedPostId },
+        {
+          $inc: { countComments: 1 },
+          $push: { comments: commentBody },
+        },
+        { returnOriginal: false }
+      );
+      res.status(200).json({ message: 'Post commented successfully' });
+
+    } catch (error) {
+      console.error('Error occurred:', error);
+      res.status(500).json({ error: 'Something went wrong.' });
+    } finally {
+      await client.close();
+  }
 });
 
 
