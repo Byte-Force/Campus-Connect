@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
+import CommentForm from './commentForm';
 
 
 type Post = {
@@ -13,7 +14,7 @@ export default function Home() {
     const navigate = useNavigate();
 
     const [posts, setPosts] = useState<Post[]>([]);
-    const [comments, setComments] = useState([]);
+
     const [selectedPostId, setSelectedPostId] = useState<number | null>(null);
 
     useEffect(() => {
@@ -86,9 +87,25 @@ export default function Home() {
                                 <h3 className="text-xl font-bold mb-2">{post["title"]}</h3>
                                 <p className="text-gray-700">{post["body"]}</p>
                                 <button onClick={() => setSelectedPostId(post.postid)} className="bg-blue-300">
-                                    Show Comments
+                                    {post.comments.length} Show Comments
                                 </button>
-                                {selectedPostId === post.postid && renderComments(post.postid)}
+
+                                {selectedPostId === post.postid && (
+                                    <>
+                                        {renderComments(post.postid)}
+                                        <CommentForm
+                                            postId={post.postid.toString()}
+                                            onClose={() => setSelectedPostId(null)}
+                                            onSave={(postId, comment) => {
+                                                // Code to handle saving the comment goes here
+                                                // For example, you might call a function to save the comment to a database or perform other actions
+                                                // For demonstration purposes, let's log the postId and comment to the console
+                                                console.log('postId:', postId);
+                                                console.log('comment:', comment);
+                                            }}
+                                        />
+                                    </>
+                                )}
                             </li>
                         ))}
                     </ul>
