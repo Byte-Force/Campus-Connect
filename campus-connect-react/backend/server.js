@@ -35,59 +35,62 @@ app.use(bodyParser.json()); // Middleware to parse incoming JSON data
 
 
 const store = new MongoDBStore({
-  uri: url,
-  collection: 'userSessions',
-  autoRemove: 'interval',
-  autoRemoveInterval: 10 // In minutes. Default
+    uri: url,
+    collection: 'userSessions',
+    autoRemove: 'interval',
+    autoRemoveInterval: 10 // In minutes. Default
 });
 
 // Listen for errors on the store.
-store.on('error', function(error) {
-  console.log(error);
+store.on('error', function (error) {
+    console.log(error);
 });
 
 app.set('view-engine', 'ejs');
 app.use(express.json());
 app.use(json());
 app.use(session({
-  secret: 'yourSecretKey',
-  resave: false,
-  saveUninitialized: false,
-  store: store,
-  cookie: { maxAge: 1000 * 60 * 60 * 24 }
+    secret: 'yourSecretKey',
+    resave: false,
+    saveUninitialized: false,
+    store: store,
+    cookie: { maxAge: 1000 * 60 * 60 * 24 }
 }));
 
 
 app.use((req, res, next) => {
-  res.setHeader("Access-Control-Allow-Origin", "http://localhost:5173");
-  res.setHeader("Access-Control-Allow-Credentials", "true");
-  res.setHeader(
-    "Access-Control-Allow-Headers",
-    "Origin, X-Requested-With, Content-Type, Accept"
-  );
-  res.setHeader(
-    "Access-Control-Allow-Methods",
-    "GET, POST, PATCH, DELETE, OPTIONS, PUT"
-  );
-  next();
+    res.setHeader("Access-Control-Allow-Origin", "http://localhost:5173");
+    res.setHeader("Access-Control-Allow-Credentials", "true");
+    res.setHeader(
+        "Access-Control-Allow-Headers",
+        "Origin, X-Requested-With, Content-Type, Accept"
+    );
+    res.setHeader(
+        "Access-Control-Allow-Methods",
+        "GET, POST, PATCH, DELETE, OPTIONS, PUT"
+    );
+    next();
 });
 
 app.get('/db/check_login', async (req, res) => {
     if (req.session && req.session.userId) {
-        await client.connect();
-        const database = client.db('CampusConnect');
-        const collection = database.collection('users');
-        const user = await collection.findOne({ user_id: req.session.userId });
-        if (user) {
-            res.json({ loggedIn: true, userName: user.userName });
-        } else {
+        try {
+            const database = client.db('CampusConnect');
+            const collection = database.collection('users');
+            const user = await collection.findOne({ user_id: req.session.userId });
+            if (user) {
+                res.json({ loggedIn: true, userName: user.userName });
+            } else {
+                res.json({ loggedIn: false, userName: null });
+            }
+        } catch (error) {
+            console.error('Error while checking login status:', error);
             res.json({ loggedIn: false, userName: null });
         }
     } else {
         res.json({ loggedIn: false, userName: null });
     }
 });
-
 
 
 app.post('/db/login', async (req, res) => {
@@ -99,9 +102,9 @@ app.post('/db/login', async (req, res) => {
         const user = await collection.findOne({ userName });
 
         if (user && await bcrypt.compare(password, user.password)) {
-            req.session.userId = user.user_id;
+            req.session.userName = user.userName;
             console.log("Session after login: ", req.session); // Log session information
-            res.json({ success: true });
+            res.json({ success: true, userName: user.userName });
         } else {
             res.json({ success: false, message: 'Incorrect username or password' });
         }
@@ -112,50 +115,42 @@ app.post('/db/login', async (req, res) => {
 });
 
 
+app.post('/db/register', async (req, res) => {
+    try {
+        await client.connect();
+        const database = client.db('CampusConnect');
+        const collection = database.collection('users');
+        const userCount = await collection.countDocuments();
+        const { userName, password, rpiEmail } = req.body;
 
+        const isRpiEmail = rpiEmail.endsWith('@rpi.edu');
+        if (!isRpiEmail) {
+            res.json({ success: false, message: 'Please provide a valid RPI email address' });
+        }
 
-app.post('/db/register', async(req, res) => {
+        const existUser = await collection.findOne({ $or: [{ userName }, { rpiEmail }] });
+        if (existUser) {
+            res.json({ success: false, message: 'Username or RPI email already exists' });
+        } else {
+            const hashedPassword = await bcrypt.hash(password, 10);
+            const newUser = {
+                user_id: userCount + 1,
+                userName,
+                rpiEmail,
+                password: hashedPassword,
+                admin: 0
+            };
 
-  try{
-      await client.connect();
-      const database = client.db('CampusConnect');
-      const collection = database.collection('users');
-      const userCount = await collection.countDocuments();
-      const { userName, password, rpiEmail } = req.body;
-
-      // Simple check for RPI email domain
-      const isRpiEmail = rpiEmail.endsWith('@rpi.edu');
-      if (!isRpiEmail) {
-        res.json({ success: false, message: 'Please provide a valid RPI email address' });
-      }
-    
-      const existUser = await collection.findOne({ $or: [{ userName }, { rpiEmail }] });
-      if (existUser) {
-          res.json({ success: false, message: 'Username or RPI email already exists' });
-      } else {
-          const hashedPassword = await bcrypt.hash(password, 10);
-
-          // Create the new user object with the required fields
-          const newUser = {
-            user_id: userCount + 1,
-            userName,
-            rpiEmail,
-            password: hashedPassword,
-            admin: 0
-          };
-
-          // Insert the new user into the database
-          await collection.insertOne(newUser);
-
-          // Close the database connection
-          client.close();
-          res.status(201).json({ message: 'User registered successfully!', user: newUser });
-      }
-  } catch (err){
-      console.error(err);
-      res.status(500).json({ error: 'An error occurred while signing up.' });
-  }
-})
+            const result = await collection.insertOne(newUser);
+            req.session.userId = result.insertedId;
+            //return res.json({ success: true });
+            return res.json({ success: true, userName: newUser.userName });
+        }
+    } catch (err) {
+        console.error(err);
+        res.status(500).json({ error: 'An error occurred while signing up.' });
+    }
+});
 
 
 // Create a new post to the database
@@ -190,6 +185,7 @@ app.get('/db/posts', async (req, res) => {
         await client.close();
     }
 });
+
 
 // Endpoint for liking a post
 app.post('/db/like', async (req, res) => {
@@ -233,40 +229,42 @@ app.post('/db/like', async (req, res) => {
   }
 });
 
+
 // Endpoint for commenting a post
 app.post('/db/comment', async (req, res) => {
-  const { commentBody, postId } = req.body;
-  // console log the userId and postId
-  try {
-      // Grab the postID from the database collection
-      await client.connect();
-      const database = client.db('CampusConnect');
-      const postsCollection = database.collection('post');
+    const { commentBody, postId } = req.body;
+    // console log the userId and postId
+    try {
+        // Grab the postID from the database collection
+        await client.connect();
+        const database = client.db('CampusConnect');
+        const postsCollection = database.collection('post');
 
-      // Find the post and check if the post exists
-      const parsedPostId = parseInt(postId);
-      const existPost = await postsCollection.findOne({ "postid": parsedPostId });
-      if (!existPost) {
-        return res.status(404).json({ error: 'Post not found.' });
-      }
+        // Find the post and check if the post exists
+        const parsedPostId = parseInt(postId);
+        const existPost = await postsCollection.findOne({ "postid": parsedPostId });
+        if (!existPost) {
+            return res.status(404).json({ error: 'Post not found.' });
+        }
 
-      // Update the post with the comment content and increment the comment count
-      const updatedPost = await postsCollection.findOneAndUpdate(
-        { "postid": parsedPostId },
-        {
-          $inc: { countComments: 1 },
-          $push: { comments: commentBody },
-        },
-        { returnOriginal: false }
-      );
-      res.status(200).json({ message: 'Post commented successfully' });
+        // Update the post with the comment content and increment the comment count
+        console.log("Comment body: ", commentBody);
+        const updatedPost = await postsCollection.findOneAndUpdate(
+            { "postid": parsedPostId },
+            {
+                $inc: { countComments: 1 },
+                $push: { comments: commentBody },
+            },
+            { returnOriginal: false }
+        );
+        res.status(200).json({ message: 'Post commented successfully' });
 
     } catch (error) {
-      console.error('Error occurred:', error);
-      res.status(500).json({ error: 'Something went wrong.' });
+        console.error('Error occurred:', error);
+        res.status(500).json({ error: 'Something went wrong.' });
     } finally {
-      await client.close();
-  }
+        await client.close();
+    }
 });
 
  

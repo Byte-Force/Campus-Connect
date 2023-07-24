@@ -16,7 +16,7 @@ export default function Home() {
 
     const [posts, setPosts] = useState<Post[]>([]);
     const [, setIsLoggedIn] = useState(false);
-    const [, setUsername] = useState(null);
+    const [username, setUsername] = useState(null);
     const [selectedPostId, setSelectedPostId] = useState<number | null>(null);
 
     useEffect(() => {
@@ -48,13 +48,14 @@ export default function Home() {
 
             setIsLoggedIn(response.data.loggedIn);
             setUsername(response.data.userName);
+            console.log('Username has changed:', username);
         };
 
 
 
         fetchPosts();
         checkLoginStatus();
-    }, []);
+    }, [username]);
 
 
     const renderComments = (postId: any) => {
@@ -85,6 +86,7 @@ export default function Home() {
 
     return (
         <div>
+            <h1 className="text-2xl font-bold mb-4">Hello {username}</h1>
             <button onClick={handlePost} className="bg-blue-300">
                 Post
             </button>
