@@ -16,8 +16,7 @@ const { json } = require('body-parser');
 const session = require('express-session');
 const MongoDBStore = require('connect-mongodb-session')(session);
 
-const app = express();
-const port = 3000;
+
 const url = 'mongodb+srv://fengj5:fHg06pjJ5ltsv0G8@cluster0.nrh8keh.mongodb.net/?retryWrites=true&w=majority';
 const client = new MongoClient(url);
 
