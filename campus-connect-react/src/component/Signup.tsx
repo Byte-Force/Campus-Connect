@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import axios from 'axios';
 
 const SignUp = () => {
   const [username, setUsername] = useState('');
@@ -10,35 +11,26 @@ const SignUp = () => {
   const navigate = useNavigate();
 
   const handleSignUp = async () => {
-    // Check if passwords match
     if (password !== repassword) {
       console.log('Passwords do not match');
       return;
     }
 
-    // Perform sign-up logic here
-    const response = await fetch('http://localhost:3000/db/register', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
+    const response = await axios.post(
+      'http://localhost:3000/db/register',
+      {
+        userName: username,
+        password,
+        rpiEmail: email
       },
-      body: JSON.stringify({ name: username, password, email }),
-    });
+      { withCredentials: true }
+    );
 
-    // Check if the sign-up was successful
-    if (response.ok) {
-      const data = await response.json();
-      if (data.success) {
-        console.log('Sign-up successful');
-        // After successful sign-up, navigate to the HomePage
-        navigate('/first-time-login');  // Replace '/home' with the path of your HomePage
-      } else {
-        console.log('Sign-up failed:', data.message);
-        // TODO: Handle sign-up failure
-      }
+    if (response.data.success) {
+      console.log('Sign-up successful');
+      navigate('/home');
     } else {
-      console.log('Sign-up failed');
-      // TODO: Handle sign-up failure
+      console.log('Sign-up failed:', response.data.message);
     }
   };
 
