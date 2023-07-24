@@ -10,7 +10,7 @@ type LikeButtonProps = {
 
 
 
-const LikeButton: React.FC<LikeButtonProps> = ({ postId, onLike }) => {
+const LikeButton: React.FC<LikeButtonProps> = ({ onLike }) => {
   const [isLiked, setIsLiked] = useState(false);
 
 
