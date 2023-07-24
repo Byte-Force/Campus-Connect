@@ -20,6 +20,7 @@ export default function Home() {
     const [userid, setUserid] = useState<number>(0);
     const [username, setUsername] = useState('');
     const [selectedPostId, setSelectedPostId] = useState<number | null>(null);
+    const sessionData = location.state?.sessionData;
 
 
 
@@ -62,20 +63,26 @@ export default function Home() {
         };
 
         fetchPosts();
-
-
         // Access the session data from the location state and set the username state 
         // get user information 
-        const sessionData = location.state?.sessionData;
+        //const sessionData = location.state?.sessionData;
         //console.log('Session Data:', sessionData);
-        if (sessionData.success) {
-            setUsername(sessionData.userName);
-            setUserid(sessionData.user_id);
-        }
+        // if (sessionData?.success) {
+        //     setUsername(sessionData.userName);
+        //     setUserid(sessionData.user_id);
+        // }
+        updateSessionData();
     }, [location.state]);
 
 
-
+    function updateSessionData() {
+        const sessionData = location.state?.sessionData;
+        console.log('Session Data:', sessionData);
+        if (sessionData?.success) {
+            setUsername(sessionData.userName);
+            setUserid(sessionData.user_id);
+        }
+    }
 
 
     const renderComments = (postId: any) => {
@@ -123,7 +130,8 @@ export default function Home() {
 
     function handlePost() {
         console.log('Post');
-        navigate('/create-post');
+
+        navigate('/create-post', { state: { userid: userid } });
     }
 
     return (
