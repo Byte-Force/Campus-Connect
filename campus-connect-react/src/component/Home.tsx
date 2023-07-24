@@ -20,7 +20,7 @@ export default function Home() {
     const [userid, setUserid] = useState<number>(0);
     const [username, setUsername] = useState('');
     const [selectedPostId, setSelectedPostId] = useState<number | null>(null);
-    const sessionData = location.state?.sessionData;
+
 
 
 
