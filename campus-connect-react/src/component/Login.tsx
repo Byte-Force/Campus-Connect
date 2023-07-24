@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import axios from 'axios';
 
 const Login: React.FC = () => {
   const [username, setUsername] = useState('');
@@ -17,37 +18,24 @@ const Login: React.FC = () => {
 
   const handleLogin = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-
-    // Perform login logic here using username and password
     console.log('Logging in with:', username, password);
 
-    // Send a POST request to your backend
-    const response = await fetch('http://localhost:3000/db/login', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
+    const response = await axios.post(
+      'http://localhost:3000/db/login',
+      {
+        userName: username,
+        password,
       },
-      body: JSON.stringify({ name: username, password, email: username + '@rpi.edu' }), // assuming username is the part before '@rpi.edu'
-    });
+      { withCredentials: true }
+    );
 
-    // Check if the login was successful
-    if (response.ok) {
-      const data = await response.json();
-      if (data.success) {
-        console.log('Login successful');
-        // Clear form fields after login
-        setUsername('');
-        setPassword('');
-        // TODO: Store the user's session information
-        // Navigate to the HomePage
-        navigate('/home'); // Replace '/home' with the path of your HomePage
-      } else {
-        console.log('Login failed:', data.message);
-        // TODO: Handle login failure
-      }
+    if (response.data.success) {
+      console.log('Login successful');
+      setUsername('');
+      setPassword('');
+      navigate('/home');
     } else {
-      console.log('Login failed');
-      // TODO: Handle login failure
+      console.log('Login failed:', response.data.message);
     }
   };
 
