@@ -9,9 +9,8 @@ const LikeButton: React.FC = () => {
     setIsLiked((prevIsLiked) => !prevIsLiked);
   };
 
-  const buttonClasses = `text-black font-bold text-xl flex flex-col ${
-    isLiked ? "bg-red-500 text-white" : "border border-red-500 text-black"
-  }`;
+  const buttonClasses = `text-black font-bold text-xl flex flex-col ${isLiked ? "bg-red-500 text-white" : "text-black"
+    }`;
 
   // Styles for the images
   const imgStyles = {

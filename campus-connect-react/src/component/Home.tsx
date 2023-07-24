@@ -1,7 +1,8 @@
 import { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 import CommentForm from './commentForm';
-import axios from 'axios';
+//import axios from 'axios';
+import LikeButton from './likebutton';
 
 
 type Post = {
@@ -13,11 +14,31 @@ type Post = {
 
 export default function Home() {
     const navigate = useNavigate();
+    const location = useLocation();
 
     const [posts, setPosts] = useState<Post[]>([]);
-    const [, setIsLoggedIn] = useState(false);
-    const [username, setUsername] = useState(null);
+    const [userid, setUserid] = useState<number>(0);
+    const [username, setUsername] = useState('');
     const [selectedPostId, setSelectedPostId] = useState<number | null>(null);
+
+
+
+    // const checkLoginStatus = async () => {
+    //     try {
+    //         const response = await axios.get(
+    //             'http://localhost:3000/db/check_login',
+    //             { withCredentials: true }
+    //         );
+    //         setIsLoggedIn(response.data.loggedIn);
+    //         // Set the username state if the user is logged in
+    //         if (response.data.loggedIn) {
+    //             setUsername(response.data.userName);
+    //         }
+    //         console.log('Username has changed:', response.data.userName);
+    //     } catch (error) {
+    //         console.error('Error checking login status:', error);
+    //     }
+    // };
 
     useEffect(() => {
         const fetchPosts = async () => {
@@ -40,22 +61,18 @@ export default function Home() {
             }
         };
 
-        const checkLoginStatus = async () => {
-            const response = await axios.get(
-                'http://localhost:3000/db/check_login',
-                { withCredentials: true }
-            );
-
-            setIsLoggedIn(response.data.loggedIn);
-            setUsername(response.data.userName);
-            console.log('Username has changed:', username);
-        };
-
-
-
         fetchPosts();
-        checkLoginStatus();
-    }, [username]);
+
+
+        // Access the session data from the location state and set the username state 
+        // get user information 
+        const sessionData = location.state?.sessionData;
+        console.log('Session Data:', sessionData);
+        if (sessionData.success) {
+            setUsername(sessionData.userName);
+            setUserid(sessionData.user_id);
+        }
+    }, [location.state]);
 
 
     const renderComments = (postId: any) => {
@@ -86,7 +103,7 @@ export default function Home() {
 
     return (
         <div>
-            <h1 className="text-2xl font-bold mb-4">Hello {username}</h1>
+            <h1 className="text-2xl font-bold mb-4">Hello {username}, Userid : {userid}</h1>
             <button onClick={handlePost} className="bg-blue-300">
                 Post
             </button>
@@ -104,6 +121,7 @@ export default function Home() {
                                 <button onClick={() => setSelectedPostId(post.postid)} className="bg-blue-300">
                                     {post.comments.length} Show Comments
                                 </button>
+                                <LikeButton />
 
                                 {selectedPostId === post.postid && (
                                     <>

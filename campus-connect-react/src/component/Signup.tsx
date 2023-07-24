@@ -30,7 +30,8 @@ const SignUp = () => {
       console.log('Sign-up successful');
       const sessionData = response.data;
       console.log('Session Name:', sessionData.userName);
-      navigate('/home');
+
+      navigate('/home', { state: { sessionData } });
     } else {
       console.log('Sign-up failed:', response.data.message);
     }
