@@ -2,11 +2,28 @@ import React, { useState } from "react";
 import Like from "../image/thumbs.png";
 import Liked from "../image/like.png";
 
-const LikeButton: React.FC = () => {
+
+type LikeButtonProps = {
+  postId: number;
+  onLike: () => Promise<void>;
+};
+
+
+
+const LikeButton: React.FC<LikeButtonProps> = ({ postId, onLike }) => {
   const [isLiked, setIsLiked] = useState(false);
 
-  const handleClick = () => {
-    setIsLiked((prevIsLiked) => !prevIsLiked);
+
+  const handleClick = async () => {
+    try {
+      // Call the onLike callback to handle the like action and update the database
+      await onLike();
+
+      // Update the state to toggle the Like button's appearance
+      setIsLiked((prevIsLiked) => !prevIsLiked);
+    } catch (error) {
+      console.error('Error occurred during like:', error);
+    }
   };
 
   const buttonClasses = `text-black font-bold text-xl flex flex-col ${isLiked ? "bg-red-500 text-white" : "text-black"

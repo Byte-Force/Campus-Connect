@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import CommentForm from './commentForm';
-//import axios from 'axios';
+import axios from 'axios';
 import LikeButton from './likebutton';
 
 
@@ -48,7 +48,7 @@ export default function Home() {
                     const data = await response.json();
                     if (data.success) {
                         const fetchedPosts = data.posts || [];
-                        console.log('Fetched posts:', fetchedPosts);
+                        //console.log('Fetched posts:', fetchedPosts);
                         setPosts(fetchedPosts);
                     } else {
                         console.error('Failed to fetch posts:', data);
@@ -67,7 +67,7 @@ export default function Home() {
         // Access the session data from the location state and set the username state 
         // get user information 
         const sessionData = location.state?.sessionData;
-        console.log('Session Data:', sessionData);
+        //console.log('Session Data:', sessionData);
         if (sessionData.success) {
             setUsername(sessionData.userName);
             setUserid(sessionData.user_id);
@@ -75,11 +75,14 @@ export default function Home() {
     }, [location.state]);
 
 
+
+
+
     const renderComments = (postId: any) => {
         const postComments = posts[parseInt(postId) - 1]?.comments || [];
 
-        console.log('Post ID:', postId);
-        console.log('Post Comments:', postComments);
+        //console.log('Post ID:', postId);
+        //console.log('Post Comments:', postComments);
 
         if (postComments.length === 0) {
             return <p>No comments available for this post.</p>;
@@ -94,6 +97,28 @@ export default function Home() {
                 ))}
             </ul>
         );
+    };
+
+
+    const handleLike = async (postId: number) => {
+        try {
+            const response = await axios.post(
+                'http://localhost:3000/db/like',
+                {
+                    userId: userid, // Replace with the actual userId of the current user
+                    postId: postId,
+                },
+                { withCredentials: true }
+            );
+
+            console.log('Like response:', response.data);
+            console.log(response.data.message);
+
+            // Refresh the posts after the like action (optional)
+
+        } catch (error) {
+            console.error('Error occurred during like:', error);
+        }
     };
 
     function handlePost() {
@@ -121,7 +146,7 @@ export default function Home() {
                                 <button onClick={() => setSelectedPostId(post.postid)} className="bg-blue-300">
                                     {post.comments.length} Show Comments
                                 </button>
-                                <LikeButton />
+                                <LikeButton postId={post["postid"]} onLike={() => handleLike(post.postid)} />
 
                                 {selectedPostId === post.postid && (
                                     <>
