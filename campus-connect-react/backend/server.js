@@ -16,8 +16,6 @@ const { json } = require('body-parser');
 const session = require('express-session');
 const MongoDBStore = require('connect-mongodb-session')(session);
 
-const app = express();
-const port = 3000;
 const url = 'mongodb+srv://fengj5:fHg06pjJ5ltsv0G8@cluster0.nrh8keh.mongodb.net/?retryWrites=true&w=majority';
 const client = new MongoClient(url);
 
@@ -181,6 +179,23 @@ app.get('/db/posts', async (req, res) => {
     } catch (error) {
         console.error(error);
         res.status(500).json({ error: 'An error occurred while getting posts' });
+    } finally {
+        await client.close();
+    }
+});
+
+
+app.get('/db/events', async (req, res) => {
+    try{
+        // retrieve the data 
+        await client.connect();
+        const database = client.db('CampusConnect');
+        const collection = database.collection('events');
+        const events = await collection.find({}).toArray();
+        res.json({ success: true, events });
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ error: 'An error occurred while getting events' });
     } finally {
         await client.close();
     }
