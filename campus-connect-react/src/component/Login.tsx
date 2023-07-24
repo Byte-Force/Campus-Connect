@@ -39,13 +39,10 @@ const Login: React.FC = () => {
         setUsername('');
         setPassword('');
 
-
-        // Access the session data from the server response and display the session name
+        // Access the session data from the server response and pass it as state while navigating
         const sessionData = response.data;
         console.log('Session Name:', sessionData.userName);
-        //console.log('Session Name:', sessionData.userName); // Adjust the property name based on your session data
-
-        navigate('/home');
+        navigate('/home', { state: { sessionData } });
       } else {
         console.log('Login failed:', response.data.message);
       }

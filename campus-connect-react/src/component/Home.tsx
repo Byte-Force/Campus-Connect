@@ -1,7 +1,8 @@
 import { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 import CommentForm from './commentForm';
 import axios from 'axios';
+import LikeButton from './likebutton';
 
 
 type Post = {
@@ -13,11 +14,31 @@ type Post = {
 
 export default function Home() {
     const navigate = useNavigate();
+    const location = useLocation();
 
     const [posts, setPosts] = useState<Post[]>([]);
-    const [, setIsLoggedIn] = useState(false);
-    const [username, setUsername] = useState(null);
+    const [userid, setUserid] = useState<number>(0);
+    const [username, setUsername] = useState('');
     const [selectedPostId, setSelectedPostId] = useState<number | null>(null);
+
+
+
+    // const checkLoginStatus = async () => {
+    //     try {
+    //         const response = await axios.get(
+    //             'http://localhost:3000/db/check_login',
+    //             { withCredentials: true }
+    //         );
+    //         setIsLoggedIn(response.data.loggedIn);
+    //         // Set the username state if the user is logged in
+    //         if (response.data.loggedIn) {
+    //             setUsername(response.data.userName);
+    //         }
+    //         console.log('Username has changed:', response.data.userName);
+    //     } catch (error) {
+    //         console.error('Error checking login status:', error);
+    //     }
+    // };
 
     useEffect(() => {
         const fetchPosts = async () => {
@@ -27,7 +48,7 @@ export default function Home() {
                     const data = await response.json();
                     if (data.success) {
                         const fetchedPosts = data.posts || [];
-                        console.log('Fetched posts:', fetchedPosts);
+                        //console.log('Fetched posts:', fetchedPosts);
                         setPosts(fetchedPosts);
                     } else {
                         console.error('Failed to fetch posts:', data);
@@ -40,29 +61,28 @@ export default function Home() {
             }
         };
 
-        const checkLoginStatus = async () => {
-            const response = await axios.get(
-                'http://localhost:3000/db/check_login',
-                { withCredentials: true }
-            );
-
-            setIsLoggedIn(response.data.loggedIn);
-            setUsername(response.data.userName);
-            console.log('Username has changed:', username);
-        };
-
-
-
         fetchPosts();
-        checkLoginStatus();
-    }, [username]);
+
+
+        // Access the session data from the location state and set the username state 
+        // get user information 
+        const sessionData = location.state?.sessionData;
+        //console.log('Session Data:', sessionData);
+        if (sessionData.success) {
+            setUsername(sessionData.userName);
+            setUserid(sessionData.user_id);
+        }
+    }, [location.state]);
+
+
+
 
 
     const renderComments = (postId: any) => {
         const postComments = posts[parseInt(postId) - 1]?.comments || [];
 
-        console.log('Post ID:', postId);
-        console.log('Post Comments:', postComments);
+        //console.log('Post ID:', postId);
+        //console.log('Post Comments:', postComments);
 
         if (postComments.length === 0) {
             return <p>No comments available for this post.</p>;
@@ -79,6 +99,28 @@ export default function Home() {
         );
     };
 
+
+    const handleLike = async (postId: number) => {
+        try {
+            const response = await axios.post(
+                'http://localhost:3000/db/like',
+                {
+                    userId: userid, // Replace with the actual userId of the current user
+                    postId: postId,
+                },
+                { withCredentials: true }
+            );
+
+            console.log('Like response:', response.data);
+            console.log(response.data.message);
+
+            // Refresh the posts after the like action (optional)
+
+        } catch (error) {
+            console.error('Error occurred during like:', error);
+        }
+    };
+
     function handlePost() {
         console.log('Post');
         navigate('/create-post');
@@ -86,7 +128,7 @@ export default function Home() {
 
     return (
         <div>
-            <h1 className="text-2xl font-bold mb-4">Hello {username}</h1>
+            <h1 className="text-2xl font-bold mb-4">Hello {username}, Userid : {userid}</h1>
             <button onClick={handlePost} className="bg-blue-300">
                 Post
             </button>
@@ -104,6 +146,7 @@ export default function Home() {
                                 <button onClick={() => setSelectedPostId(post.postid)} className="bg-blue-300">
                                     {post.comments.length} Show Comments
                                 </button>
+                                <LikeButton postId={post["postid"]} onLike={() => handleLike(post.postid)} />
 
                                 {selectedPostId === post.postid && (
                                     <>
