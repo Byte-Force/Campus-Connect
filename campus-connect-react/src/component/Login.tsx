@@ -1,9 +1,13 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import axios from 'axios';
 
 const Login: React.FC = () => {
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
+
+
+
 
   const navigate = useNavigate();
 
@@ -15,39 +19,38 @@ const Login: React.FC = () => {
     setPassword(e.target.value);
   };
 
+
   const handleLogin = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-
-    // Perform login logic here using username and password
     console.log('Logging in with:', username, password);
 
-    // Send a POST request to your backend
-    const response = await fetch('http://localhost:3000/db/login', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({ name: username, password, email: username + '@rpi.edu' }), // assuming username is the part before '@rpi.edu'
-    });
+    try {
+      const response = await axios.post(
+        'http://localhost:3000/db/login',
+        {
+          userName: username,
+          password,
+        },
+        { withCredentials: true }
+      );
 
-    // Check if the login was successful
-    if (response.ok) {
-      const data = await response.json();
-      if (data.success) {
+      if (response.data.success) {
         console.log('Login successful');
-        // Clear form fields after login
         setUsername('');
         setPassword('');
-        // TODO: Store the user's session information
-        // Navigate to the HomePage
-        navigate('/home'); // Replace '/home' with the path of your HomePage
+
+
+        // Access the session data from the server response and display the session name
+        const sessionData = response.data;
+        console.log('Session Name:', sessionData.userName);
+        //console.log('Session Name:', sessionData.userName); // Adjust the property name based on your session data
+
+        navigate('/home');
       } else {
-        console.log('Login failed:', data.message);
-        // TODO: Handle login failure
+        console.log('Login failed:', response.data.message);
       }
-    } else {
-      console.log('Login failed');
-      // TODO: Handle login failure
+    } catch (error) {
+      console.error('Error occurred during login:', error);
     }
   };
 
