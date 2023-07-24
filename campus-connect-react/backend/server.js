@@ -74,20 +74,21 @@ app.use((req, res, next) => {
 app.get('/db/check_login', async (req, res) => {
     if (req.session && req.session.userId) {
         try {
+            // Use the existing client instance to access the database
             const database = client.db('CampusConnect');
             const collection = database.collection('users');
             const user = await collection.findOne({ user_id: req.session.userId });
             if (user) {
-                res.json({ loggedIn: true, userName: user.userName });
+                res.json({ loggedIn: true, userName: user.userName, user_id: user_id });
             } else {
-                res.json({ loggedIn: false, userName: null });
+                res.json({ loggedIn: false, userName: null, user_id: null });
             }
         } catch (error) {
             console.error('Error while checking login status:', error);
-            res.json({ loggedIn: false, userName: null });
+            res.json({ loggedIn: false, userName: null, user_id: null });
         }
     } else {
-        res.json({ loggedIn: false, userName: null });
+        res.json({ loggedIn: false, userName: null, user_id: null });
     }
 });
 
@@ -103,7 +104,7 @@ app.post('/db/login', async (req, res) => {
         if (user && await bcrypt.compare(password, user.password)) {
             req.session.userName = user.userName;
             console.log("Session after login: ", req.session); // Log session information
-            res.json({ success: true, userName: user.userName });
+            res.json({ success: true, userName: user.userName, user_id: user.user_id });
         } else {
             res.json({ success: false, message: 'Incorrect username or password' });
         }
@@ -143,7 +144,7 @@ app.post('/db/register', async (req, res) => {
             const result = await collection.insertOne(newUser);
             req.session.userId = result.insertedId;
             //return res.json({ success: true });
-            return res.json({ success: true, userName: newUser.userName });
+            return res.json({ success: true, userName: newUser.userName, user_id: newUser.user_id });
         }
     } catch (err) {
         console.error(err);
@@ -188,44 +189,44 @@ app.get('/db/posts', async (req, res) => {
 
 // Endpoint for liking a post
 app.post('/db/like', async (req, res) => {
-  const { userId, postId } = req.body;
-  // console log the userId and postId
-  try {
-      // Grab the postID from the database collection
-      await client.connect();
-      const database = client.db('CampusConnect');
-      const postsCollection = database.collection('post');
+    const { userId, postId } = req.body;
+    // console log the userId and postId
+    try {
+        // Grab the postID from the database collection
+        await client.connect();
+        const database = client.db('CampusConnect');
+        const postsCollection = database.collection('post');
 
-      // Find the post and check if the post exists
-      const parsedPostId = parseInt(postId);
-      const parsedUserId = parseInt(userId);
-      const existPost = await postsCollection.findOne({ "postid": parsedPostId });
-      if (!existPost) {
-        return res.status(404).json({ error: 'Post not found.' });
-      }
+        // Find the post and check if the post exists
+        const parsedPostId = parseInt(postId);
+        const parsedUserId = parseInt(userId);
+        const existPost = await postsCollection.findOne({ "postid": parsedPostId });
+        if (!existPost) {
+            return res.status(404).json({ error: 'Post not found.' });
+        }
 
-      // Check if the user has already liked the post
-      if (existPost.likes.includes(parsedUserId)) {
-        return res.status(400).json({ error: 'User has already liked this post.' });
-      }
+        // Check if the user has already liked the post
+        if (existPost.likes.includes(parsedUserId)) {
+            return res.status(400).json({ error: 'User has already liked this post.' });
+        }
 
-      // Step 3: Update the post with the like count and userId
-      const updatedPost = await postsCollection.findOneAndUpdate(
-        { "postid": parsedPostId },
-        {
-          $inc: { "countLikes": 1 },
-          $push: { likes: parsedUserId },
-        },
-        { returnOriginal: false }
-      );
-      res.status(200).json({ message: 'Post liked successfully' });
+        // Step 3: Update the post with the like count and userId
+        const updatedPost = await postsCollection.findOneAndUpdate(
+            { "postid": parsedPostId },
+            {
+                $inc: { "countLikes": 1 },
+                $push: { likes: parsedUserId },
+            },
+            { returnOriginal: false }
+        );
+        res.status(200).json({ message: 'Post liked successfully' });
 
     } catch (error) {
-      console.error('Error occurred:', error);
-      res.status(500).json({ error: 'Something went wrong.' });
+        console.error('Error occurred:', error);
+        res.status(500).json({ error: 'Something went wrong.' });
     } finally {
-      await client.close();
-  }
+        await client.close();
+    }
 });
 
 
@@ -266,5 +267,5 @@ app.post('/db/comment', async (req, res) => {
     }
 });
 
- 
+
 app.listen(port, () => console.log(`Example app listening on port ${port}!`))
