@@ -15,6 +15,14 @@ const { MongoClient } = require('mongodb');
 const { json } = require('body-parser');
 const session = require('express-session');
 const MongoDBStore = require('connect-mongodb-session')(session);
+const fs = require('fs');
+const onnx = require('onnxruntime-node');
+const spacy = require('spacy');
+
+
+// load the ONNX model
+const model = new onnx.InferenceSession();
+model.loadModel("Campus-Connect/campus-connect-react/src/ml/spam/spam-lstm.onnx");
 
 
 const url = 'mongodb+srv://fengj5:fHg06pjJ5ltsv0G8@cluster0.nrh8keh.mongodb.net/?retryWrites=true&w=majority';

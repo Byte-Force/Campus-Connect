@@ -1,0 +1,1 @@
+{"tokenizer_type": "spacy", "language_model": "en_core_web_sm", "batch_first": true, "include_lengths": true}
