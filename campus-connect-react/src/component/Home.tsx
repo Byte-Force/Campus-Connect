@@ -20,6 +20,8 @@ export default function Home() {
     const [userid, setUserid] = useState<number>(0);
     const [username, setUsername] = useState('');
     const [selectedPostId, setSelectedPostId] = useState<number | null>(null);
+    const [comments, setComments] = useState<any[]>([]);
+
 
 
 
@@ -51,6 +53,8 @@ export default function Home() {
                         const fetchedPosts = data.posts || [];
                         //console.log('Fetched posts:', fetchedPosts);
                         setPosts(fetchedPosts);
+                        setComments(fetchedPosts.map((post: any) => post.comments)); // assuming comments is a property on each post
+
                     } else {
                         console.error('Failed to fetch posts:', data);
                     }
@@ -63,16 +67,10 @@ export default function Home() {
         };
 
         fetchPosts();
-        // Access the session data from the location state and set the username state 
-        // get user information 
-        //const sessionData = location.state?.sessionData;
-        //console.log('Session Data:', sessionData);
-        // if (sessionData?.success) {
-        //     setUsername(sessionData.userName);
-        //     setUserid(sessionData.user_id);
-        // }
+
         updateSessionData();
     }, [location.state]);
+
 
 
     function updateSessionData() {
@@ -85,11 +83,35 @@ export default function Home() {
     }
 
 
-    const renderComments = (postId: any) => {
-        const postComments = posts[parseInt(postId) - 1]?.comments || [];
+    const handleNewComment = async (postId: string, comment: string): Promise<void> => {
+        try {
+            // API call to save the comment
+            const response = await fetch('http://localhost:3000/db/comment', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ postId, commentBody: comment }),
+            });
 
-        //console.log('Post ID:', postId);
-        //console.log('Post Comments:', postComments);
+            if (response.ok) {
+                const updatedComments = [...comments];
+                updatedComments[parseInt(postId) - 1].push(comment); // assuming postId starts from 1
+                setComments(updatedComments);
+                console.log('Comment created successfully!');
+            } else {
+                console.error('Failed to create comment.');
+            }
+        } catch (error) {
+            console.error('Error creating comment:', error);
+        }
+    };
+
+
+
+
+    const renderComments = (postId: number): JSX.Element => {
+        const postComments = comments[postId - 1] || [];  // assuming postId starts from 1
 
         if (postComments.length === 0) {
             return <p>No comments available for this post.</p>;
@@ -97,7 +119,7 @@ export default function Home() {
 
         return (
             <ul>
-                {postComments.map((comment, index) => (
+                {postComments.map((comment:string, index:number) => (
                     <li key={index} className="bg-gray-200 p-2 rounded-lg">
                         {comment}
                     </li>
@@ -105,6 +127,8 @@ export default function Home() {
             </ul>
         );
     };
+
+
 
 
     const handleLike = async (postId: number) => {
@@ -162,13 +186,7 @@ export default function Home() {
                                         <CommentForm
                                             postId={post.postid.toString()}
                                             onClose={() => setSelectedPostId(null)}
-                                            onSave={(postId, comment) => {
-                                                // Code to handle saving the comment goes here
-                                                // For example, you might call a function to save the comment to a database or perform other actions
-                                                // For demonstration purposes, let's log the postId and comment to the console
-                                                console.log('postId:', postId);
-                                                console.log('comment:', comment);
-                                            }}
+                                            onSave={handleNewComment}
                                         />
                                     </>
                                 )}
