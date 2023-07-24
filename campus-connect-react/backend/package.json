@@ -25,6 +25,7 @@
     "onnxruntime-node": "^1.15.1",
     "passport": "^0.6.0",
     "passport-local": "^1.0.0",
+    "pickle": "^0.2.0",
     "pug": "^3.0.2",
     "python-shell": "^5.0.0",
     "spacy": "^0.0.4"

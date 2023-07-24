@@ -2,10 +2,7 @@
 
 class Classifier {
     constructor(modelPath, tokenizerConfigPath, tokenizerVocabPath, labelVocabPath) {
-      this.modelPath = modelPath;
-      this.tokenizerConfigPath = tokenizerConfigPath;
-      this.tokenizerVocabPath = tokenizerVocabPath;
-      this.labelVocabPath = labelVocabPath;
+      throw new Error('Method constructor() must be implemented in the child class.');
     }
   
     classify(text) {

@@ -15,18 +15,21 @@ const { MongoClient } = require('mongodb');
 const { json } = require('body-parser');
 const session = require('express-session');
 const MongoDBStore = require('connect-mongodb-session')(session);
-const fs = require('fs');
-const onnx = require('onnxruntime-node');
-const spacy = require('spacy');
+
+const SpamClassifier = require('./spam_classifier');
 
 
-// load the ONNX model
-const model = new onnx.InferenceSession();
-model.loadModel("Campus-Connect/campus-connect-react/src/ml/spam/spam-lstm.onnx");
+
 
 
 const url = 'mongodb+srv://fengj5:fHg06pjJ5ltsv0G8@cluster0.nrh8keh.mongodb.net/?retryWrites=true&w=majority';
 const client = new MongoClient(url);
+const spamClassifier = new SpamClassifier(
+    "Campus-Connect/campus-connect-react/src/ml/spam/spam-lstm.onnx",
+    "Campus-Connect/campus-connect-react/src/ml/spam/tokenizer_config.json",
+    "Campus-Connect/campus-connect-react/src/ml/spam/text_vocab.pkl",
+    "Campus-Connect/campus-connect-react/src/ml/spam/label_vocab.pkl"
+    );
 
 app.set("view-engine", "ejs")
 app.use(express.json());
