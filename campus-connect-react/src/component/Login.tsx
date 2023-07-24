@@ -6,6 +6,9 @@ const Login: React.FC = () => {
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
 
+
+
+
   const navigate = useNavigate();
 
   const handleUsernameChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -16,26 +19,38 @@ const Login: React.FC = () => {
     setPassword(e.target.value);
   };
 
+
   const handleLogin = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     console.log('Logging in with:', username, password);
 
-    const response = await axios.post(
-      'http://localhost:3000/db/login',
-      {
-        userName: username,
-        password,
-      },
-      { withCredentials: true }
-    );
+    try {
+      const response = await axios.post(
+        'http://localhost:3000/db/login',
+        {
+          userName: username,
+          password,
+        },
+        { withCredentials: true }
+      );
 
-    if (response.data.success) {
-      console.log('Login successful');
-      setUsername('');
-      setPassword('');
-      navigate('/home');
-    } else {
-      console.log('Login failed:', response.data.message);
+      if (response.data.success) {
+        console.log('Login successful');
+        setUsername('');
+        setPassword('');
+
+
+        // Access the session data from the server response and display the session name
+        const sessionData = response.data;
+        console.log('Session Name:', sessionData.userName);
+        //console.log('Session Name:', sessionData.userName); // Adjust the property name based on your session data
+
+        navigate('/home');
+      } else {
+        console.log('Login failed:', response.data.message);
+      }
+    } catch (error) {
+      console.error('Error occurred during login:', error);
     }
   };
 

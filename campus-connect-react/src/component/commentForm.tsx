@@ -14,8 +14,29 @@ const CommentForm: React.FC<CommentFormProps> = ({ postId, onClose, onSave }) =>
         setComment(event.target.value);
     };
 
-    const handleSave = () => {
+    const handleSave = async (e: { preventDefault: () => void; }) => {
+        e.preventDefault();
         onSave(postId, comment);
+        try {
+            const response = await fetch('http://localhost:3000/db/comment', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+
+                body: JSON.stringify({ postId, commentBody: comment }),
+            });
+
+            if (response.ok) {
+                console.log('Comment created successfully!');
+                // Additional logic here, e.g., redirect to another page
+            } else {
+                console.error('Failed to create comment.');
+            }
+        } catch (error) {
+            console.error('Error creating comment:', error);
+        }
+
         setComment('');
         onClose();
     };
@@ -31,7 +52,7 @@ const CommentForm: React.FC<CommentFormProps> = ({ postId, onClose, onSave }) =>
                     value={comment}
                     onChange={handleInputChange}
                 />
-                <button onClick={handleSave}>Save Comment</button>
+                <button onClick={handleSave}>Comment</button>
                 <button onClick={onClose}>Cancel</button>
             </div>
         </div>
