@@ -25,6 +25,7 @@ export default function Home() {
 
 
 
+
     // const checkLoginStatus = async () => {
     //     try {
     //         const response = await axios.get(
@@ -67,19 +68,19 @@ export default function Home() {
 
         fetchPosts();
 
+        updateSessionData();
+    }, [location.state]);
 
 
 
-        // Access the session data from the location state and set the username state 
-        // get user information 
+    function updateSessionData() {
         const sessionData = location.state?.sessionData;
-        //console.log('Session Data:', sessionData);
-        if (sessionData.success) {
+        console.log('Session Data:', sessionData);
+        if (sessionData?.success) {
             setUsername(sessionData.userName);
             setUserid(sessionData.user_id);
         }
-    }, [location.state]);
-
+    }
 
 
     const handleNewComment = async (postId: string, comment: string): Promise<void> => {
@@ -105,6 +106,7 @@ export default function Home() {
             console.error('Error creating comment:', error);
         }
     };
+
 
 
 
@@ -152,7 +154,8 @@ export default function Home() {
 
     function handlePost() {
         console.log('Post');
-        navigate('/create-post');
+
+        navigate('/create-post', { state: { userid: userid } });
     }
 
     return (
