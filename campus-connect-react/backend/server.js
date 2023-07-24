@@ -14,6 +14,17 @@ const port = 3000;
 const url = 'mongodb+srv://fengj5:fHg06pjJ5ltsv0G8@cluster0.nrh8keh.mongodb.net/?retryWrites=true&w=majority';
 const client = new MongoClient(url);
 
+app.set("view-engine", "ejs")
+app.use(express.json());
+// app.use(bodyParser.json());
+const cors = require('cors'); // Place this with other requires (like 'path' and 'express')
+
+// mongoose.connect('mongodb+srv://fengj5:fHg06pjJ5ltsv0G8@cluster0.nrh8keh.mongodb.net/?retryWrites=true&w=majority', {
+//     useNewUrlParser: true,
+//     useUnifiedTopology: true,
+// });
+
+
 const store = new MongoDBStore({
   uri: url,
   collection: 'userSessions',
@@ -36,6 +47,7 @@ app.use(session({
   store: store,
   cookie: { maxAge: 1000 * 60 * 60 * 24 }
 }));
+
 
 app.use((req, res, next) => {
   res.setHeader("Access-Control-Allow-Origin", "http://localhost:5173");
@@ -94,6 +106,48 @@ app.post('/db/login', async (req, res) => {
 
 
 app.post('/db/register', async(req, res) => {
+
+  try{
+      await client.connect();
+      const database = client.db('CampusConnect');
+      const collection = database.collection('users');
+      const userCount = await collection.countDocuments();
+      const { userName, password, rpiEmail } = req.body;
+
+      // Simple check for RPI email domain
+      const isRpiEmail = rpiEmail.endsWith('@rpi.edu');
+      if (!isRpiEmail) {
+        res.json({ success: false, message: 'Please provide a valid RPI email address' });
+      }
+    
+      const existUser = await collection.findOne({ $or: [{ userName }, { rpiEmail }] });
+      if (existUser) {
+          res.json({ success: false, message: 'Username or RPI email already exists' });
+      } else {
+          const hashedPassword = await bcrypt.hash(password, 10);
+
+          // Create the new user object with the required fields
+          const newUser = {
+            user_id: userCount + 1,
+            userName,
+            rpiEmail,
+            password: hashedPassword,
+            admin: 0
+          };
+
+          // Insert the new user into the database
+          await collection.insertOne(newUser);
+
+          // Close the database connection
+          client.close();
+          res.status(201).json({ message: 'User registered successfully!', user: newUser });
+      }
+  } catch (err){
+      console.error(err);
+      res.status(500).json({ error: 'An error occurred while signing up.' });
+  }
+})
+
     try {
         await client.connect();
         const database = client.db('CampusConnect');
@@ -162,6 +216,7 @@ app.post('/db/like', async (req, res) => {
 });
 
 
+
 // Create a new post to the database
 app.post('/db/posts', async (req, res) => {
     try {
@@ -195,6 +250,41 @@ app.get('/db/posts', async (req, res) => {
     }
 });
 
+// Endpoint for commenting a post
+app.post('/db/comment', async (req, res) => {
+  const { commentBody, postId } = req.body;
+  // console log the userId and postId
+  try {
+      // Grab the postID from the database collection
+      await client.connect();
+      const database = client.db('CampusConnect');
+      const postsCollection = database.collection('post');
+
+      // Find the post and check if the post exists
+      const parsedPostId = parseInt(postId);
+      const existPost = await postsCollection.findOne({ "postid": parsedPostId });
+      if (!existPost) {
+        return res.status(404).json({ error: 'Post not found.' });
+      }
+
+      // Update the post with the comment content and increment the comment count
+      const updatedPost = await postsCollection.findOneAndUpdate(
+        { "postid": parsedPostId },
+        {
+          $inc: { countComments: 1 },
+          $push: { comments: commentBody },
+        },
+        { returnOriginal: false }
+      );
+      res.status(200).json({ message: 'Post commented successfully' });
+
+    } catch (error) {
+      console.error('Error occurred:', error);
+      res.status(500).json({ error: 'Something went wrong.' });
+    } finally {
+      await client.close();
+  }
+});
 
 
 app.listen(port, () => console.log(`Example app listening on port ${port}!`))
