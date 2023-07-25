@@ -17,11 +17,10 @@ class SpamClassifier extends Classifier {
    */
   constructor(modelPath, tokenizerConfigPath, textVocabPath, labelVocabPath) {
     super();
-
     this.model = null;
     this.tokenizerConfigPath = tokenizerConfigPath;
-    this.textVocab = pickle.load(textVocabPath);
-    this.labelVocab = pickle.load(labelVocabPath);
+    this.textVocab = pickle.loads(textVocabPath);
+    this.labelVocab = pickle.loads(labelVocabPath);
 
     // load tokenizer
     this.tokenizerConfig = require(tokenizerConfigPath);

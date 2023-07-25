@@ -3,7 +3,7 @@
 const Classifier = require('./classifier');
 
 class LabelClassifier extends Classifier {
-  constructor(modelPath, tokenizerConfigPath, tokenizerVocabPath, labelVocabPath) {
+  constructor(modelPath, tokenizerConfigPath, textVocabPath, labelVocabPath) {
     super();
     // Implement the constructor logic here
     // ...

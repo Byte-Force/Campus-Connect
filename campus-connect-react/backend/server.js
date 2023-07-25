@@ -25,11 +25,12 @@ const SpamClassifier = require('./spam_classifier');
 const url = 'mongodb+srv://fengj5:fHg06pjJ5ltsv0G8@cluster0.nrh8keh.mongodb.net/?retryWrites=true&w=majority';
 const client = new MongoClient(url);
 const spamClassifier = new SpamClassifier(
-    "Campus-Connect/campus-connect-react/src/ml/spam/spam-lstm.onnx",
-    "Campus-Connect/campus-connect-react/src/ml/spam/tokenizer_config.json",
-    "Campus-Connect/campus-connect-react/src/ml/spam/text_vocab.pkl",
-    "Campus-Connect/campus-connect-react/src/ml/spam/label_vocab.pkl"
+    "./ml/spam/spam-lstm.onnx",
+    "./ml/spam/tokenizer_config.json",
+    "./ml/spam/text_vocab.pkl",
+    "./ml/spam/label_vocab.pkl"
     );
+
 
 app.set("view-engine", "ejs")
 app.use(express.json());
@@ -167,19 +168,30 @@ app.post('/db/register', async (req, res) => {
 // Create a new post to the database
 app.post('/db/posts', async (req, res) => {
     try {
-        await client.connect();
-        const database = client.db('CampusConnect');
-        const collection = database.collection('post');
-        const { title, body } = req.body;
-        await collection.insertOne({ title, body, likes: [], comments: [], date: new Date(), countLikes: 0, countComments: 0 });
-        res.json({ success: true, message: 'User post successfully' });
+      await client.connect();
+      const database = client.db('CampusConnect');
+      const collection = database.collection('post');
+      const { title, body } = req.body;
+  
+      // Check if the body text is spam or not
+      const isSpam = spamClassifier.classifier(body);
+  
+      // If the text is detected as spam, you can choose to handle it accordingly (e.g., don't save it to the database).
+      if (isSpam) {
+        res.status(400).json({ error: 'Spam content detected. Post not allowed.' });
+        return;
+      }
+  
+      await collection.insertOne({ title, body, likes: [], comments: [], date: new Date(), countLikes: 0, countComments: 0 });
+      res.json({ success: true, message: 'User post successfully' });
     } catch (error) {
-        console.error(error);
-        res.status(500).json({ error: 'An error occurred while posting' });
+      console.error(error);
+      res.status(500).json({ error: 'An error occurred while posting' });
     } finally {
-        await client.close();
+      await client.close();
     }
-});
+  });
+  
 
 
 app.get('/db/posts', async (req, res) => {
