@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 
 
 
@@ -24,6 +24,8 @@ const Tag = () => {
 
 const PostForm = () => {
     const navigate = useNavigate();
+
+    const location = useLocation();
 
     const [title, setTitle] = useState('');
     const [body, setBody] = useState('');
@@ -54,6 +56,10 @@ const PostForm = () => {
             // Handle the response here (e.g., show success message, redirect, etc.)
             if (response.ok) {
                 console.log('Post created successfully!');
+
+                // const sessionData = location.state?.sessionData;
+                // console.log('Session Data:', sessionData);
+                navigate('/home', { state: { user_id: location.state?.user_id } });
                 // Additional logic here, e.g., redirect to another page
             } else {
                 console.error('Failed to create post.');
@@ -65,11 +71,9 @@ const PostForm = () => {
         console.log('Title:', title);
         console.log('Body:', body);
 
-        //setIsSubmitting(false); // Reset the isSubmitting state to false after the fetch is complete
-        // Reset the form after submission
         setTitle('');
         setBody('');
-        navigate('/home');
+
     };
 
 

@@ -198,6 +198,23 @@ app.get('/db/posts', async (req, res) => {
 });
 
 
+app.get('/db/events', async (req, res) => {
+    try{
+        // retrieve the data 
+        await client.connect();
+        const database = client.db('CampusConnect');
+        const collection = database.collection('events');
+        const events = await collection.find({}).toArray();
+        res.json({ success: true, events });
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ error: 'An error occurred while getting events' });
+    } finally {
+        await client.close();
+    }
+});
+
+
 // Endpoint for liking a post
 app.post('/db/like', async (req, res) => {
     const { userId, postId } = req.body;
