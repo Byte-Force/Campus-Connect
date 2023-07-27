@@ -309,5 +309,41 @@ app.post('/db/comment', async (req, res) => {
     }
 });
 
+// Endpoint for editing a post
+// Edit a post in the database
+app.put('/db/posts/:postid', async (req, res) => {
+    const postIdToUpdate = parseInt(req.params.postid);
+
+    try {
+        await client.connect();
+        const database = client.db('CampusConnect');
+        const collection = database.collection('post');
+
+        // Find the post with the specified postId
+        const foundPost = await collection.findOne({ postid: postIdToUpdate });
+
+        if (!foundPost) {
+            // If the post with the specified postId is not found, return a 404 Not Found response
+            return res.status(404).json({ error: 'Post not found' });
+        }
+
+        // Get the updated title and body from the request body
+        const { title, body } = req.body;
+
+        // Update the post with the new title and body
+        await collection.updateOne(
+            { postid: postIdToUpdate },
+            { $set: { title: title, body: body } }
+        );
+
+        res.json({ success: true, message: 'Post updated successfully' });
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ error: 'An error occurred while updating the post' });
+    } finally {
+        await client.close();
+    }
+});
+
 
 app.listen(port, () => console.log(`Example app listening on port ${port}!`))
