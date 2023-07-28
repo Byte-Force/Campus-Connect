@@ -159,7 +159,8 @@ app.post('/db/posts', async (req, res) => {
         const database = client.db('CampusConnect');
         const collection = database.collection('post');
         const { title, body } = req.body;
-        await collection.insertOne({ title, body, likes: [], comments: [], date: new Date(), countLikes: 0, countComments: 0 });
+        const postCount = await collection.countDocuments();
+        await collection.insertOne({ title, body, likes: [], comments: [], date: new Date(), countLikes: 0, countComments: 0, postid: postCount + 1 });
         res.json({ success: true, message: 'User post successfully' });
     } catch (error) {
         console.error(error);
@@ -188,8 +189,10 @@ app.get('/db/posts', async (req, res) => {
 // Delete a post from the database
 app.delete('/db/posts/:postid', async (req, res) => {
     try {
-        const postIdToDelete = parseInt(req.params.postid); // Get the postId from the request URL
         await client.connect();
+        const postIdToDelete = parseInt(req.params.postid); // Get the postId from the request URL
+
+
         const database = client.db('CampusConnect');
         const collection = database.collection('post');
 
@@ -205,7 +208,8 @@ app.delete('/db/posts/:postid', async (req, res) => {
     } catch (error) {
         console.error(error);
         res.status(500).json({ error: 'An error occurred while deleting the post' });
-    } finally {
+    }
+    finally {
         await client.close();
     }
 });
@@ -213,7 +217,7 @@ app.delete('/db/posts/:postid', async (req, res) => {
 
 
 app.get('/db/events', async (req, res) => {
-    try{
+    try {
         // retrieve the data 
         await client.connect();
         const database = client.db('CampusConnect');
