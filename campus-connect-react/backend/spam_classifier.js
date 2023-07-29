@@ -1,11 +1,36 @@
 // spam_classifier.js
 
 const { InferenceSession, Tensor } = require('onnxruntime-node');
-const pickle = require('pickle');
-const spacy = require('spacy');
+const pickle = require('node-pickle');
+const { PythonShell } = require('python-shell');
+const fs = require('fs');
+
 const Classifier = require('./classifier');
 
 const TOKENIZER_BATCH_SIZE = 1;
+
+// Function to tokenize text using en_core_web_sm
+function tokenizeText(inputText) {
+  return new Promise((resolve, reject) => {
+    const options = {
+      mode: 'text',
+      pythonPath: 'python3', // Replace with the correct path to your Python 3 executable
+      pythonOptions: ['-u'], // To make Python print unbuffered stdout
+      scriptPath: __dirname,
+      args: [inputText],
+    };
+
+    PythonShell.run('tokenize_text.py', options, (err, results) => {
+      if (err) {
+        reject(err);
+      } else {
+        const tokens = JSON.parse(results[0]);
+        resolve(tokens);
+      }
+    });
+  });
+}
+
 
 class SpamClassifier extends Classifier {
   /**
@@ -18,25 +43,15 @@ class SpamClassifier extends Classifier {
   constructor(modelPath, tokenizerConfigPath, textVocabPath, labelVocabPath) {
     super();
     this.model = null;
+    this.modelPath = modelPath;
     this.tokenizerConfigPath = tokenizerConfigPath;
     this.textVocab = pickle.loads(textVocabPath);
-    this.labelVocab = pickle.loads(labelVocabPath);
+    this.tokenizer = tokenizeText;
 
-    // load tokenizer
-    this.tokenizerConfig = require(tokenizerConfigPath);
-    spacy.load(this.tokenizerConfig.language_model).then((nlp) => {
-      this.tokenizer = async (text) => {
-        const doc = await nlp(text);
-        return doc.tokens.map(token => token.text);
-      };
-    }).catch((error) => {
-      console.error('Error loading spaCy tokenizer:', error);
-    });
 
   // load the ONNX model
     try {
-      this.model = new InferenceSession();
-      this.model.loadModel(modelPath);
+        this.model = new InferenceSession();
     } catch (error) {
       console.error('Error loading the ONNX model:', error);
     }
@@ -48,9 +63,6 @@ class SpamClassifier extends Classifier {
    * @returns {Tensor} Tensor of the preprocessed text
    */
   async preprocess(text) {
-    if (!this.tokenizer) {
-      throw new Error('Tokenizer not initialized. Make sure spaCy is installed and the language model is available.');
-    }
 
     if (!this.textVocab) {
       throw new Error('Text vocabulary not initialized. Make sure the vocabulary file is available.');
@@ -60,7 +72,8 @@ class SpamClassifier extends Classifier {
       throw new Error('Label vocabulary not initialized. Make sure the vocabulary file is available.');
     }
 
-    const tokens = await this.tokenizer(text);
+    // Tokenize the text
+    const token = this.tokenizer(text);
 
     // Convert tokens to corresponding vocabulary indices using the textVocab
     const inputIndices = tokens.map(token => this.textVocab.stoi[token]);
@@ -76,6 +89,7 @@ class SpamClassifier extends Classifier {
    * @returns {boolean} true if spam, false if not spam
    */
   async classify(text) {
+    await this.model.loadModel(this.modelPath);
     try {
       // Preprocess the text
       const inputTensor = await this.preprocess(text);
