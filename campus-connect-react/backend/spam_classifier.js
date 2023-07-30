@@ -42,13 +42,11 @@ class SpamClassifier extends Classifier {
    */
   constructor(modelPath, tokenizerConfigPath, textVocabPath, labelVocabPath) {
     super();
-    this.model = new InferenceSession();
     this.modelPath = modelPath;
     this.tokenizerConfigPath = tokenizerConfigPath;
     this.textVocab = pickle.loads(textVocabPath);
     this.tokenizer = tokenizeText;
   }
-
   /**
    * preprocess the text by tokenizing it and converting it to a Tensor
    * @param {String} text input text for classification
@@ -80,7 +78,7 @@ class SpamClassifier extends Classifier {
    * @returns {boolean} true if spam, false if not spam
    */
   async classify(text) {
-    await this.model.loadModel(this.modelPath);
+    this.model = await InferenceSession.create(this.modelPath);
     try {
       // Preprocess the text
       const inputTensor = await this.preprocess(text);
@@ -98,5 +96,6 @@ class SpamClassifier extends Classifier {
     }
   }
 }
+
 
 module.exports = SpamClassifier;
