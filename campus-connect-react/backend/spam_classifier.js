@@ -58,12 +58,8 @@ class SpamClassifier extends Classifier {
       throw new Error('Text vocabulary not initialized. Make sure the vocabulary file is available.');
     }
 
-    if (!this.labelVocab) {
-      throw new Error('Label vocabulary not initialized. Make sure the vocabulary file is available.');
-    }
-
     // Tokenize the text
-    const token = this.tokenizer(text);
+    const tokens = this.tokenizer(text);
 
     // Convert tokens to corresponding vocabulary indices using the textVocab
     const inputIndices = tokens.map(token => this.textVocab.stoi[token]);
