@@ -174,7 +174,7 @@ app.post('/db/posts', async (req, res) => {
       const { title, body } = req.body;
   
       // Check if the body text is spam or not
-      const isSpam = spamClassifier.classifier(body);
+      const isSpam = spamClassifier.classify(body);
   
       // If the text is detected as spam, you can choose to handle it accordingly (e.g., don't save it to the database).
       if (isSpam) {
