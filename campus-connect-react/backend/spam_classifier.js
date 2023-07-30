@@ -49,12 +49,6 @@ class SpamClassifier extends Classifier {
     this.tokenizer = tokenizeText;
 
 
-  // load the ONNX model
-    try {
-        this.model = new InferenceSession();
-    } catch (error) {
-      console.error('Error loading the ONNX model:', error);
-    }
   }
 
   /**
@@ -89,7 +83,7 @@ class SpamClassifier extends Classifier {
    * @returns {boolean} true if spam, false if not spam
    */
   async classify(text) {
-    await this.model.loadModel(this.modelPath);
+    this.model = await InferenceSession.loadModel(this.modelPath);
     try {
       // Preprocess the text
       const inputTensor = await this.preprocess(text);
