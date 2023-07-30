@@ -42,13 +42,11 @@ class SpamClassifier extends Classifier {
    */
   constructor(modelPath, tokenizerConfigPath, textVocabPath, labelVocabPath) {
     super();
-    this.model = null;
+    this.model = new InferenceSession();
     this.modelPath = modelPath;
     this.tokenizerConfigPath = tokenizerConfigPath;
     this.textVocab = pickle.loads(textVocabPath);
     this.tokenizer = tokenizeText;
-
-
   }
 
   /**
@@ -73,8 +71,7 @@ class SpamClassifier extends Classifier {
     const inputIndices = tokens.map(token => this.textVocab.stoi[token]);
 
     // Create a Tensor from the input indices
-    const inputTensor = new Tensor('int32', inputIndices, [TOKENIZER_BATCH_SIZE, inputIndices.length]);
-    return inputTensor;
+    return new Tensor('int32', inputIndices, [TOKENIZER_BATCH_SIZE, inputIndices.length]);
   }
 
   /**
@@ -83,7 +80,7 @@ class SpamClassifier extends Classifier {
    * @returns {boolean} true if spam, false if not spam
    */
   async classify(text) {
-    this.model = await InferenceSession.loadModel(this.modelPath);
+    await this.model.loadModel(this.modelPath);
     try {
       // Preprocess the text
       const inputTensor = await this.preprocess(text);
@@ -94,9 +91,7 @@ class SpamClassifier extends Classifier {
       const prob = outputTensor.data; // Probability of spam
 
       // if prob > 0.7, classify as spam
-      const isSpam = probabilitySpam > 0.7;
-
-      return isSpam;
+      return prob > 0.7;
     } catch (error) {
       console.error('Error during classification:', error);
       throw error;
