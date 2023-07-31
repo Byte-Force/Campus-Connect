@@ -79,6 +79,7 @@ export default function Home() {
         if (sessionData?.success) {
             setUsername(sessionData.userName);
             setUserid(sessionData.user_id);
+            console.log('Username has changed:', username);
         }
     }
 
@@ -182,7 +183,7 @@ export default function Home() {
 
     return (
         <div>
-            <h1 className="text-2xl font-bold mb-4">Hello {username}, Userid : {userid}</h1>
+            {/* <h1 className="text-2xl font-bold mb-4">Hello {username}, Userid : {userid}</h1> */}
             <button onClick={handlePost} className="bg-blue-300">
                 Post
             </button>
