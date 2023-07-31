@@ -185,30 +185,30 @@ app.get('/db/posts', async (req, res) => {
     }
 });
 
-// Delete a post from the database
-app.delete('/db/posts/:postid', async (req, res) => {
-    try {
-        const postIdToDelete = parseInt(req.params.postid); // Get the postId from the request URL
-        await client.connect();
-        const database = client.db('CampusConnect');
-        const collection = database.collection('post');
+// // Delete a post from the database
+// app.delete('/db/posts/:postid', async (req, res) => {
+//     try {
+//         const postIdToDelete = parseInt(req.params.postid); // Get the postId from the request URL
+//         await client.connect();
+//         const database = client.db('CampusConnect');
+//         const collection = database.collection('post');
 
-        // Check if the post exists before deleting
-        const existingPost = await collection.findOne({ "postid": postIdToDelete });
-        if (!existingPost) {
-            return res.status(404).json({ error: 'Post not found' });
-        }
+//         // Check if the post exists before deleting
+//         const existingPost = await collection.findOne({ "postid": postIdToDelete });
+//         if (!existingPost) {
+//             return res.status(404).json({ error: 'Post not found' });
+//         }
 
-        // Delete the post
-        await collection.deleteOne({ "postid": postIdToDelete });
-        res.json({ success: true, message: 'Post deleted successfully' });
-    } catch (error) {
-        console.error(error);
-        res.status(500).json({ error: 'An error occurred while deleting the post' });
-    } finally {
-        await client.close();
-    }
-});
+//         // Delete the post
+//         await collection.deleteOne({ "postid": postIdToDelete });
+//         res.json({ success: true, message: 'Post deleted successfully' });
+//     } catch (error) {
+//         console.error(error);
+//         res.status(500).json({ error: 'An error occurred while deleting the post' });
+//     } finally {
+//         await client.close();
+//     }
+// });
 
 
 
