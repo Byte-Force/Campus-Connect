@@ -309,7 +309,7 @@ app.post('/db/comment', async (req, res) => {
         console.error('Error occurred:', error);
         res.status(500).json({ error: 'Something went wrong.' });
     } finally {
-        await client.close();
+        // await client.close();
     }
 });
 

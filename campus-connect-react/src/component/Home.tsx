@@ -1,4 +1,7 @@
-import { useState, useEffect } from 'react';
+import {
+    useState,
+    useEffect
+} from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import CommentForm from './commentForm';
 import axios from 'axios';
@@ -212,7 +215,7 @@ export default function Home() {
                                     <>
                                         {renderComments(post.postid)}
                                         <CommentForm
-                                            postId={post.postid.toString()}
+                                            postId={post.postid?post.postid.toString():''}
                                             onClose={() => setSelectedPostId(null)}
                                             onSave={handleNewComment}
                                         />
