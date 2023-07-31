@@ -79,6 +79,7 @@ export default function Home() {
         if (sessionData?.success) {
             setUsername(sessionData.userName);
             setUserid(sessionData.user_id);
+            console.log('Username has changed:', username);
         }
     }
 
