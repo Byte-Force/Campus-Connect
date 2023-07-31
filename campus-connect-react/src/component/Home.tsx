@@ -79,6 +79,7 @@ export default function Home() {
         if (sessionData?.success) {
             setUsername(sessionData.userName);
             setUserid(sessionData.user_id);
+            console.log('Username has changed:', username);
         }
     }
 
@@ -110,6 +111,7 @@ export default function Home() {
 
 
 
+
     const renderComments = (postId: number): JSX.Element => {
         const postComments = comments[postId - 1] || [];  // assuming postId starts from 1
 
@@ -119,13 +121,34 @@ export default function Home() {
 
         return (
             <ul>
-                {postComments.map((comment:string, index:number) => (
+                {postComments.map((comment: string, index: number) => (
                     <li key={index} className="bg-gray-200 p-2 rounded-lg">
                         {comment}
                     </li>
                 ))}
             </ul>
         );
+    };
+
+    const handleDelete = async (postId: number) => {
+        try {
+            const response = await fetch(`http://localhost:3000/db/posts/${postId}`, {
+                method: 'DELETE',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+            });
+
+            if (response.ok) {
+                console.log('Post deleted successfully!');
+                setPosts((prevPosts) => prevPosts.filter((post) => post.postid !== postId));
+            } else {
+                console.error('Failed to delete post.');
+            }
+        } catch (error) {
+            console.error('Error deleting post:', error);
+            // Handle error (e.g., show an error message)
+        }
     };
 
 
@@ -160,7 +183,7 @@ export default function Home() {
 
     return (
         <div>
-            <h1 className="text-2xl font-bold mb-4">Hello {username}, Userid : {userid}</h1>
+            {/* <h1 className="text-2xl font-bold mb-4">Hello {username}, Userid : {userid}</h1> */}
             <button onClick={handlePost} className="bg-blue-300">
                 Post
             </button>
@@ -179,6 +202,11 @@ export default function Home() {
                                     {post.comments.length} Show Comments
                                 </button>
                                 <LikeButton postId={post["postid"]} onLike={() => handleLike(post.postid)} />
+
+                                {/* Add the Delete button */}
+                                <button onClick={() => handleDelete(post["postid"])} className="bg-red-300">
+                                    Delete
+                                </button>
 
                                 {selectedPostId === post.postid && (
                                     <>

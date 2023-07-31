@@ -159,7 +159,8 @@ app.post('/db/posts', async (req, res) => {
         const database = client.db('CampusConnect');
         const collection = database.collection('post');
         const { title, body } = req.body;
-        await collection.insertOne({ title, body, likes: [], comments: [], date: new Date(), countLikes: 0, countComments: 0 });
+        const postCount = await collection.countDocuments();
+        await collection.insertOne({ title, body, likes: [], comments: [], date: new Date(), countLikes: 0, countComments: 0, postid: postCount + 1 });
         res.json({ success: true, message: 'User post successfully' });
     } catch (error) {
         console.error(error);
@@ -185,35 +186,9 @@ app.get('/db/posts', async (req, res) => {
     }
 });
 
-// // Delete a post from the database
-// app.delete('/db/posts/:postid', async (req, res) => {
-//     try {
-//         const postIdToDelete = parseInt(req.params.postid); // Get the postId from the request URL
-//         await client.connect();
-//         const database = client.db('CampusConnect');
-//         const collection = database.collection('post');
-
-//         // Check if the post exists before deleting
-//         const existingPost = await collection.findOne({ "postid": postIdToDelete });
-//         if (!existingPost) {
-//             return res.status(404).json({ error: 'Post not found' });
-//         }
-
-//         // Delete the post
-//         await collection.deleteOne({ "postid": postIdToDelete });
-//         res.json({ success: true, message: 'Post deleted successfully' });
-//     } catch (error) {
-//         console.error(error);
-//         res.status(500).json({ error: 'An error occurred while deleting the post' });
-//     } finally {
-//         await client.close();
-//     }
-// });
-
-
 
 app.get('/db/events', async (req, res) => {
-    try{
+    try {
         // retrieve the data 
         await client.connect();
         const database = client.db('CampusConnect');
@@ -304,6 +279,42 @@ app.post('/db/comment', async (req, res) => {
     } catch (error) {
         console.error('Error occurred:', error);
         res.status(500).json({ error: 'Something went wrong.' });
+    } finally {
+        await client.close();
+    }
+});
+
+// Endpoint for editing a post
+// Edit a post in the database
+app.put('/db/posts/:postid', async (req, res) => {
+    const postIdToUpdate = parseInt(req.params.postid);
+
+    try {
+        await client.connect();
+        const database = client.db('CampusConnect');
+        const collection = database.collection('post');
+
+        // Find the post with the specified postId
+        const foundPost = await collection.findOne({ postid: postIdToUpdate });
+
+        if (!foundPost) {
+            // If the post with the specified postId is not found, return a 404 Not Found response
+            return res.status(404).json({ error: 'Post not found' });
+        }
+
+        // Get the updated title and body from the request body
+        const { title, body } = req.body;
+
+        // Update the post with the new title and body
+        await collection.updateOne(
+            { postid: postIdToUpdate },
+            { $set: { title: title, body: body } }
+        );
+
+        res.json({ success: true, message: 'Post updated successfully' });
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ error: 'An error occurred while updating the post' });
     } finally {
         await client.close();
     }
