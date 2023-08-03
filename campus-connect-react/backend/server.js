@@ -142,7 +142,7 @@ app.post('/db/register', async (req, res) => {
 
             const result = await collection.insertOne(newUser);
             req.session.userId = result.insertedId;
-            //return res.json({ success: true });
+
             return res.json({ success: true, userName: newUser.userName, user_id: newUser.user_id });
         }
     } catch (err) {
@@ -158,9 +158,9 @@ app.post('/db/posts', async (req, res) => {
         await client.connect();
         const database = client.db('CampusConnect');
         const collection = database.collection('post');
-        const { title, body } = req.body;
+        const { title, body, selectedCategory } = req.body;
         const postCount = await collection.countDocuments();
-        await collection.insertOne({ title, body, likes: [], comments: [], date: new Date(), countLikes: 0, countComments: 0, postid: postCount + 1 });
+        await collection.insertOne({ title, body, likes: [], comments: [], date: new Date(), countLikes: 0, countComments: 0, postid: postCount + 1, category: selectedCategory });
         res.json({ success: true, message: 'User post successfully' });
     } catch (error) {
         console.error(error);

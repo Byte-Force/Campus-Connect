@@ -6,6 +6,9 @@ import { useNavigate, useLocation } from 'react-router-dom';
 import CommentForm from './commentForm';
 import axios from 'axios';
 import LikeButton from './likebutton';
+import SideBar from './sideBar';
+
+
 
 
 type Post = {
@@ -13,6 +16,7 @@ type Post = {
     title: string;
     body: string;
     comments: string[]; // Assuming comments is an array of strings
+    category: string; // New property for the category of the post
 };
 
 export default function Home() {
@@ -185,47 +189,78 @@ export default function Home() {
     }
 
     return (
-        <div>
-            {/* <h1 className="text-2xl font-bold mb-4">Hello {username}, Userid : {userid}</h1> */}
-            <button onClick={handlePost} className="bg-blue-300">
-                Post
-            </button>
 
-            <div>
-                <h2 className="text-2xl font-bold mb-4">All Posts</h2>
-                {posts.length === 0 ? (
-                    <p>No posts available.</p>
-                ) : (
-                    <ul>
-                        {posts.map((post) => (
-                            <li key={post["postid"]} className="bg-gray-100 p-4 mb-4 rounded-lg">
-                                <h3 className="text-xl font-bold mb-2">{post["title"]}</h3>
-                                <p className="text-gray-700">{post["body"]}</p>
-                                <button onClick={() => setSelectedPostId(post.postid)} className="bg-blue-300">
-                                    {post.comments.length} Show Comments
-                                </button>
-                                <LikeButton postId={post["postid"]} onLike={() => handleLike(post.postid)} />
-
-                                {/* Add the Delete button */}
-                                <button onClick={() => handleDelete(post["postid"])} className="bg-red-300">
-                                    Delete
-                                </button>
-
-                                {selectedPostId === post.postid && (
-                                    <>
-                                        {renderComments(post.postid)}
-                                        <CommentForm
-                                            postId={post.postid?post.postid.toString():''}
-                                            onClose={() => setSelectedPostId(null)}
-                                            onSave={handleNewComment}
-                                        />
-                                    </>
-                                )}
-                            </li>
-                        ))}
-                    </ul>
-                )}
+        <div className="flex">
+            {/* SideBar */}
+            <div className="w-1/4 ">
+                <SideBar /> {/* Replace 'SideBar' with the appropriate component */}
             </div>
-        </div>
+            <div className="w-3/4  ">
+                <div className="flex justify-end m-4 ">
+                    <button onClick={handlePost} className="bg-blue-300 mr-4 p-2 rounded-lg">
+                        Post
+                    </button>
+                </div>
+
+                <div>
+                    <h2 className="text-2xl font-bold ">All Posts</h2>
+                    {posts.length === 0 ? (
+                        <p>No posts available.</p>
+                    ) : (
+                        <ul>
+                            {posts.map((post) => (
+                                <li key={post['postid']} className="bg-gray-100 p-4 mb-4 rounded-lg">
+                                    {/* Title */}
+                                    <h3 className="text-2xl font-bold mb-2">{post['title']}</h3>
+
+                                    {/* Body */}
+                                    <p className="text-gray-700 text-lg">{post['body']}</p>
+
+                                    {/* Category */}
+                                    <p className="text-blue-600 font-bold">#{post.category}</p>
+
+                                    {/* Buttons */}
+                                    <div className="flex items-center space-x-4 mt-4">
+                                        {/* Like Button */}
+                                        <LikeButton postId={post['postid']} onLike={() => handleLike(post.postid)} />
+
+                                        {/* Comment Button */}
+                                        <button
+                                            onClick={() => setSelectedPostId(post.postid)}
+                                            className="bg-blue-300 px-4 py-2 rounded-lg"
+                                        >
+                                            {post.comments.length} Show Comments
+                                        </button>
+
+                                        {/* Delete Button */}
+                                        <button
+                                            onClick={() => handleDelete(post['postid'])}
+                                            className="bg-red-300 px-4 py-2 rounded-lg"
+                                        >
+                                            Delete
+                                        </button>
+                                    </div>
+
+                                    {selectedPostId === post.postid && (
+                                        <>
+                                            {renderComments(post.postid)}
+                                            <CommentForm
+                                                postId={post.postid ? post.postid.toString() : ''}
+                                                onClose={() => setSelectedPostId(null)}
+                                                onSave={handleNewComment}
+                                            />
+                                        </>
+                                    )}
+                                </li>
+                            ))}
+                        </ul>
+                    )}
+                </div>
+            </div>
+        </div >
     );
-}    
+}
+
+
+
+
