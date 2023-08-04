@@ -7,12 +7,10 @@ import { useNavigate, useLocation } from 'react-router-dom';
 import CommentForm from './commentForm';
 import axios from 'axios';
 import LikeButton from './likebutton';
-import SideBar from './sideBar';
 import Delete from '../image/delete.png';
 import Comment from '../image/comment.png';
 import React from 'react';
 import PostIcon from '../image/post.png';
-import EventBoard from './event';
 
 
 
@@ -196,14 +194,8 @@ export default function Home() {
         navigate('/create-post', { state: { userid: userid } });
     }
     return (
-        <div className="flex">
-
-            {/* SideBar */}
-            <div className="w-1/5">
-                <SideBar />
-            </div>
-
-            <div className="w-3/5">
+        <div >
+            <div >
                 <div className="flex justify-end">
                     <button
                         onClick={handlePost}
@@ -290,10 +282,7 @@ export default function Home() {
                     )}
                 </div>
             </div>
-            {/* Event Board */}
-            <div className="w-1/5">
-                <EventBoard />
-            </div>
+
         </div>
     );
 }
