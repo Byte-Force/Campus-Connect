@@ -1,4 +1,5 @@
 import {
+
     useState,
     useEffect
 } from 'react';
@@ -7,7 +8,11 @@ import CommentForm from './commentForm';
 import axios from 'axios';
 import LikeButton from './likebutton';
 import SideBar from './sideBar';
-
+import Delete from '../image/delete.png';
+import Comment from '../image/comment.png';
+import React from 'react';
+import PostIcon from '../image/post.png';
+import EventBoard from './event';
 
 
 
@@ -58,7 +63,8 @@ export default function Home() {
                     const data = await response.json();
                     if (data.success) {
                         const fetchedPosts = data.posts || [];
-                        //console.log('Fetched posts:', fetchedPosts);
+                        //sort post from recent to old
+                        fetchedPosts.sort((a: Post, b: Post) => b.postid - a.postid);
                         setPosts(fetchedPosts);
                         setComments(fetchedPosts.map((post: any) => post.comments)); // assuming comments is a property on each post
 
@@ -128,10 +134,12 @@ export default function Home() {
 
         return (
             <ul>
+                <br></br>
                 {postComments.map((comment: string, index: number) => (
-                    <li key={index} className="bg-gray-200 p-2 rounded-lg">
-                        {comment}
-                    </li>
+                    <React.Fragment key={index}>
+                        <li className="bg-gray-200 p-2 rounded-lg">{comment}</li>
+                        <br />
+                    </React.Fragment>
                 ))}
             </ul>
         );
@@ -187,31 +195,43 @@ export default function Home() {
 
         navigate('/create-post', { state: { userid: userid } });
     }
-
     return (
-
         <div className="flex">
+
             {/* SideBar */}
-            <div className="w-1/4 ">
-                <SideBar /> {/* Replace 'SideBar' with the appropriate component */}
+            <div className="w-1/5">
+                <SideBar />
             </div>
-            <div className="w-3/4  ">
-                <div className="flex justify-end m-4 ">
-                    <button onClick={handlePost} className="bg-blue-300 mr-4 p-2 rounded-lg">
-                        Post
+
+            <div className="w-3/5">
+                <div className="flex justify-end">
+                    <button
+                        onClick={handlePost}
+                        className="bg-blue-300 mr-4 p-2 rounded-lg flex items-center space-x-2 hover:bg-blue-400"
+                    >
+                        {/* Post Icon */}
+                        <img src={PostIcon} alt="Post Icon" className="w-5 h-5" />
+
+                        {/* Button Label */}
+                        <span>Post</span>
                     </button>
                 </div>
 
                 <div>
-                    <h2 className="text-2xl font-bold ">All Posts</h2>
+                    <h2 className="text-2xl font-bold">All Posts</h2>
                     {posts.length === 0 ? (
                         <p>No posts available.</p>
                     ) : (
                         <ul>
                             {posts.map((post) => (
-                                <li key={post['postid']} className="bg-gray-100 p-4 mb-4 rounded-lg">
+                                <li
+                                    key={post['postid']}
+                                    className="bg-gray-100 p-4 mb-4 rounded-lg shadow-md"
+                                >
                                     {/* Title */}
-                                    <h3 className="text-2xl font-bold mb-2">{post['title']}</h3>
+                                    <h3 className="text-2xl font-bold mb-2 text-gray-800">
+                                        {post['title']}
+                                    </h3>
 
                                     {/* Body */}
                                     <p className="text-gray-700 text-lg">{post['body']}</p>
@@ -222,14 +242,27 @@ export default function Home() {
                                     {/* Buttons */}
                                     <div className="flex items-center space-x-4 mt-4">
                                         {/* Like Button */}
-                                        <LikeButton postId={post['postid']} onLike={() => handleLike(post.postid)} />
+                                        <LikeButton
+                                            postId={post['postid']}
+                                            onLike={() => handleLike(post.postid)}
+                                        />
 
                                         {/* Comment Button */}
                                         <button
                                             onClick={() => setSelectedPostId(post.postid)}
-                                            className="bg-blue-300 px-4 py-2 rounded-lg"
+                                            className="bg-blue-300 px-4 py-1 rounded-lg"
                                         >
-                                            {post.comments.length} Show Comments
+                                            <div className="flex items-center space-x-2">
+                                                {/* Comment Icon */}
+                                                <img
+                                                    src={Comment}
+                                                    alt="Comment Icon"
+                                                    className="w-5 h-5"
+                                                />
+
+                                                {/* Number of Comments */}
+                                                <span>{post.comments.length}</span>
+                                            </div>
                                         </button>
 
                                         {/* Delete Button */}
@@ -237,7 +270,7 @@ export default function Home() {
                                             onClick={() => handleDelete(post['postid'])}
                                             className="bg-red-300 px-4 py-2 rounded-lg"
                                         >
-                                            Delete
+                                            <img src={Delete} alt="Delete Icon" className="w-4 h-4" />
                                         </button>
                                     </div>
 
@@ -257,7 +290,11 @@ export default function Home() {
                     )}
                 </div>
             </div>
-        </div >
+            {/* Event Board */}
+            <div className="w-1/5">
+                <EventBoard />
+            </div>
+        </div>
     );
 }
 

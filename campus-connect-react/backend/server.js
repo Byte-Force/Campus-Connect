@@ -89,6 +89,9 @@ app.get('/db/check_login', async (req, res) => {
     } else {
         res.json({ loggedIn: false, userName: null, user_id: null });
     }
+
+    await client.close();
+
 });
 
 
@@ -111,6 +114,7 @@ app.post('/db/login', async (req, res) => {
         console.error(error);
         res.status(500).json({ error: 'An error occurred while logging in.' });
     }
+    await client.close();
 });
 
 
@@ -148,6 +152,9 @@ app.post('/db/register', async (req, res) => {
     } catch (err) {
         console.error(err);
         res.status(500).json({ error: 'An error occurred while signing up.' });
+    }
+    finally {
+        await client.close();
     }
 });
 

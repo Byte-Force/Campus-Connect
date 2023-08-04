@@ -158,7 +158,7 @@ export default function CreatePostForm() {
     return (
 
 
-        <div className="grid grid-cols-12 gap-4 m-20">
+        <div className="grid grid-cols-12 gap-4 m-20 bg-white rounded-lg shadow-md">
             {/* Larger column */}
             <div className="col-span-8 p-4">
                 <PostForm />

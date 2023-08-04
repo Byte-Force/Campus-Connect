@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import Like from "../image/thumbs.png";
+import Like from "../image/unlike.png";
 import Liked from "../image/like.png";
 
 
@@ -26,7 +26,7 @@ const LikeButton: React.FC<LikeButtonProps> = ({ onLike }) => {
     }
   };
 
-  const buttonClasses = `text-black font-bold text-xl flex flex-col ${isLiked ? "bg-red-500 text-white" : "text-black"
+  const buttonClasses = `text-black font-bold text-xl flex flex-col ${isLiked ? " text-white" : "text-black"
     }`;
 
   // Styles for the images

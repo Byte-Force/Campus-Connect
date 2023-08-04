@@ -5,16 +5,16 @@ const categories = ["IT", "Computer Science", "Events"];
 
 export default function SideBar() {
     return (
-        <div className="flex h-screen">
-            <div className="w-64 flex-shrink-0 bg-gray-200 p-10">
+        <div >
+            <div className="p-10">
                 <div className="flex items-center mb-6">
-                    <img src={Home} alt="Home Icon" className="w-6 h-6 mr-2" />
+                    <img src={Home} alt="Home Icon" className="w-6 h-6 " />
                     <a href="#" className="text-xl font-bold  hover:text-gray-500">
                         Home
                     </a>
                 </div>
                 <div className="flex items-center mb-6">
-                    <img src={Event} alt="Event Icon" className="w-6 h-6 mr-2 " />
+                    <img src={Event} alt="Event Icon" className="w-6 h-6  " />
                     <a href="#events" className="text-xl font-bold  hover:text-gray-500">
                         Events
                     </a>

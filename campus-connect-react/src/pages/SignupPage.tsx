@@ -1,5 +1,6 @@
 import Headers from "../component/header";
 import SignUp from "../component/Signup";
+import Footer from "../component/footer";
 
 
 export default function SignupPage() {
@@ -8,6 +9,7 @@ export default function SignupPage() {
 
             <Headers />
             <SignUp />
+            <Footer />
 
         </div>
     )
