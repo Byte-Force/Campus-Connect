@@ -32,6 +32,11 @@ app.use(bodyParser.json()); // Middleware to parse incoming JSON data
 // });
 
 
+// This code creates a new MongoDBStore object called store, which is used to store user sessions. 
+// The uri is the MongoDB connection url, and the collection is the name of the collection in the database. 
+// The autoRemoveInterval is the time interval in minutes to run the cleanup job. 
+// The default is set to 10 minutes, and it will remove expired sessions every 10 minutes.
+
 const store = new MongoDBStore({
     uri: url,
     collection: 'userSessions',
@@ -39,7 +44,10 @@ const store = new MongoDBStore({
     autoRemoveInterval: 10 // In minutes. Default
 });
 
-// Listen for errors on the store.
+
+// Sets up a listener for the 'error' event on the store object. 
+// The listener is a function that logs the error.
+
 store.on('error', function (error) {
     console.log(error);
 });
@@ -56,6 +64,9 @@ app.use(session({
 }));
 
 
+// This code allows the frontend to access the backend.
+// It also allows cookies to be used for authentication.
+
 app.use((req, res, next) => {
     res.setHeader("Access-Control-Allow-Origin", "http://localhost:5173");
     res.setHeader("Access-Control-Allow-Credentials", "true");
@@ -69,6 +80,10 @@ app.use((req, res, next) => {
     );
     next();
 });
+
+// This code checks to see if the user is logged in by checking if there is a user_id in the session. 
+// If there is a user_id in the session, it checks to see if that user_id is in the database. 
+// If it is, it returns the username and user_id. If it is not, it returns null.
 
 app.get('/db/check_login', async (req, res) => {
     if (req.session && req.session.userId) {
@@ -92,6 +107,11 @@ app.get('/db/check_login', async (req, res) => {
 });
 
 
+// This code is used to handle login requests. It uses the findOne() function to find a user with the username provided in the request body. 
+// If a user is found, it uses the compare() function to compare the provided password with the hashed password stored in the database. 
+// If the passwords match, the user is logged in and their username and user_id are returned in the response. 
+// If the passwords do not match, the user is not logged in and an error message is returned.
+
 app.post('/db/login', async (req, res) => {
     try {
         await client.connect();
@@ -113,6 +133,11 @@ app.post('/db/login', async (req, res) => {
     }
 });
 
+
+// This code is used to register a new user to the Campus Connect application. 
+// It checks to see if the user has provided a valid RPI email address, and if the user does not already exist in the database. 
+// If the user does not exist, the user is added to the database and the user's session is started. 
+// If the user already exists, the user is not added to the database and an error message is returned.
 
 app.post('/db/register', async (req, res) => {
     try {
@@ -152,7 +177,10 @@ app.post('/db/register', async (req, res) => {
 });
 
 
-// Create a new post to the database
+
+// The code above is used to post a new post to the database. 
+// It connects to the database, inserts the required data, and then closes the connection. 
+
 app.post('/db/posts', async (req, res) => {
     try {
         await client.connect();
@@ -171,6 +199,8 @@ app.post('/db/posts', async (req, res) => {
 });
 
 
+// This code connects to the database and then gets the posts from the database and returns them to the frontend.
+
 app.get('/db/posts', async (req, res) => {
     try {
         await client.connect();
@@ -186,7 +216,10 @@ app.get('/db/posts', async (req, res) => {
     }
 });
 
-// Delete a post from the database
+
+// This code deletes a post from the database. The code takes the postid from the request URL and checks if the post exists. 
+// If it does, the post is deleted from the database. If it does not, an error is returned to the user.
+
 app.delete('/db/posts/:postid', async (req, res) => {
     try {
         await client.connect();
@@ -216,6 +249,9 @@ app.delete('/db/posts/:postid', async (req, res) => {
 
 
 
+// This code uses the MongoDB client to connect to the database and retrieve all the events in the database
+// It then returns a JSON object containing the events
+// The code is used by the /db/events endpoint
 app.get('/db/events', async (req, res) => {
     try {
         // retrieve the data 
@@ -233,7 +269,12 @@ app.get('/db/events', async (req, res) => {
 });
 
 
-// Endpoint for liking a post
+// This code is a function that will add a like to a post in the database. 
+// It takes in the userId and postId and then connects to the database, finds the postID from the database collection, 
+// checks if the post exists, checks if the user has already liked the post, 
+// and then updates the post with the like count and userId. 
+// The function returns a 200 status code if the post is liked successfully.
+
 app.post('/db/like', async (req, res) => {
     const { userId, postId } = req.body;
     // console log the userId and postId
@@ -276,7 +317,13 @@ app.post('/db/like', async (req, res) => {
 });
 
 
-// Endpoint for commenting a post
+
+// This code is to add a comment to a post. It is called when a user clicks the submit button on the comment form. 
+// The comment form contains a text input field for the comment body, as well as a hidden input field for the post ID. 
+// The code first grabs the comment body and post ID from the request body. 
+// It then checks to see if the post exists in the database. 
+// If it does, it updates the post by adding the comment body to the comments array and incrementing the comment count. 
+// It then returns a success message to the client.
 app.post('/db/comment', async (req, res) => {
     const { commentBody, postId } = req.body;
     // console log the userId and postId
@@ -313,8 +360,10 @@ app.post('/db/comment', async (req, res) => {
     }
 });
 
-// Endpoint for editing a post
-// Edit a post in the database
+
+//This function updates a post in the database. It first checks if the post exists in the database, 
+// and if it does not, it returns a 404 error. If the post does exist, 
+// it updates the title and body of the post with the new title and body sent in the request body.
 app.put('/db/posts/:postid', async (req, res) => {
     const postIdToUpdate = parseInt(req.params.postid);
 
