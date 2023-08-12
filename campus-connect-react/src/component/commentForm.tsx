@@ -40,23 +40,34 @@ const CommentForm: React.FC<CommentFormProps> = ({ postId, onClose, onSave }) =>
         setComment('');
         onClose();
     };
-
     return (
         <div className="popup">
             <div className="popup-inner">
                 <h3>Add a Comment</h3>
-                <textarea
-                    rows={4}
-                    cols={50}
-                    placeholder="Write your comment here..."
-                    value={comment}
-                    onChange={handleInputChange}
-                />
-                <button onClick={handleSave}>Comment</button>
-                <button onClick={onClose}>Cancel</button>
+                <div className="w-full">
+                    <textarea
+                        rows={4}
+                        cols={50}
+                        placeholder="Write your comment here..."
+                        value={comment}
+                        onChange={handleInputChange}
+                        className="w-full" // Set the textarea width to 100% of its container
+                    />
+                </div>
+                <div className="flex justify-end mt-4">
+                    {/* Comment Button */}
+                    <button onClick={handleSave} className="bg-blue-300 px-4 py-2 rounded-lg mr-2">
+                        Comment
+                    </button>
+                    {/* Cancel Button */}
+                    <button onClick={onClose} className="bg-red-300 px-4 py-2 rounded-lg">
+                        Cancel
+                    </button>
+                </div>
             </div>
         </div>
     );
+
 };
 
 export default CommentForm;

@@ -1,5 +1,6 @@
 import Login from "../component/Login";
 import Headers from '../component/header';
+import Footer from "../component/footer";
 
 /*
 The login Page structure 
@@ -12,6 +13,7 @@ export default function Signin() {
 
             <Headers />
             <Login />
+            <Footer />
 
         </div>
     )

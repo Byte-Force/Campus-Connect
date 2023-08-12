@@ -1,4 +1,5 @@
 import {
+
     useState,
     useEffect
 } from 'react';
@@ -6,6 +7,11 @@ import { useNavigate, useLocation } from 'react-router-dom';
 import CommentForm from './commentForm';
 import axios from 'axios';
 import LikeButton from './likebutton';
+import Delete from '../image/delete.png';
+import Comment from '../image/comment.png';
+import React from 'react';
+import PostIcon from '../image/post.png';
+
 
 
 type Post = {
@@ -13,6 +19,7 @@ type Post = {
     title: string;
     body: string;
     comments: string[]; // Assuming comments is an array of strings
+    category: string; // New property for the category of the post
 };
 
 export default function Home() {
@@ -54,7 +61,8 @@ export default function Home() {
                     const data = await response.json();
                     if (data.success) {
                         const fetchedPosts = data.posts || [];
-                        //console.log('Fetched posts:', fetchedPosts);
+                        //sort post from recent to old
+                        fetchedPosts.sort((a: Post, b: Post) => b.postid - a.postid);
                         setPosts(fetchedPosts);
                         setComments(fetchedPosts.map((post: any) => post.comments)); // assuming comments is a property on each post
 
@@ -124,10 +132,12 @@ export default function Home() {
 
         return (
             <ul>
+                <br></br>
                 {postComments.map((comment: string, index: number) => (
-                    <li key={index} className="bg-gray-200 p-2 rounded-lg">
-                        {comment}
-                    </li>
+                    <React.Fragment key={index}>
+                        <li className="bg-gray-200 p-2 rounded-lg">{comment}</li>
+                        <br />
+                    </React.Fragment>
                 ))}
             </ul>
         );
@@ -183,49 +193,100 @@ export default function Home() {
 
         navigate('/create-post', { state: { userid: userid } });
     }
-
     return (
-        <div>
-            {/* <h1 className="text-2xl font-bold mb-4">Hello {username}, Userid : {userid}</h1> */}
-            <button onClick={handlePost} className="bg-blue-300">
-                Post
-            </button>
+        <div >
+            <div >
+                <div className="flex justify-end">
+                    <button
+                        onClick={handlePost}
+                        className="bg-blue-300 mr-4 p-2 rounded-lg flex items-center space-x-2 hover:bg-blue-400"
+                    >
+                        {/* Post Icon */}
+                        <img src={PostIcon} alt="Post Icon" className="w-5 h-5" />
 
-            <div>
-                <h2 className="text-2xl font-bold mb-4">All Posts</h2>
-                {posts.length === 0 ? (
-                    <p>No posts available.</p>
-                ) : (
-                    <ul>
-                        {posts.map((post) => (
-                            <li key={post["postid"]} className="bg-gray-100 p-4 mb-4 rounded-lg">
-                                <h3 className="text-xl font-bold mb-2">{post["title"]}</h3>
-                                <p className="text-gray-700">{post["body"]}</p>
-                                <button onClick={() => setSelectedPostId(post.postid)} className="bg-blue-300">
-                                    {post.comments.length} Show Comments
-                                </button>
-                                <LikeButton postId={post["postid"]} onLike={() => handleLike(post.postid)} />
+                        {/* Button Label */}
+                        <span>Post</span>
+                    </button>
+                </div>
 
-                                {/* Add the Delete button */}
-                                <button onClick={() => handleDelete(post["postid"])} className="bg-red-300">
-                                    Delete
-                                </button>
+                <div>
+                    <h2 className="text-2xl font-bold">All Posts</h2>
+                    {posts.length === 0 ? (
+                        <p>No posts available.</p>
+                    ) : (
+                        <ul>
+                            {posts.map((post) => (
+                                <li
+                                    key={post['postid']}
+                                    className="bg-gray-100 p-4 mb-4 rounded-lg shadow-md"
+                                >
+                                    {/* Title */}
+                                    <h3 className="text-2xl font-bold mb-2 text-gray-800">
+                                        {post['title']}
+                                    </h3>
 
-                                {selectedPostId === post.postid && (
-                                    <>
-                                        {renderComments(post.postid)}
-                                        <CommentForm
-                                            postId={post.postid?post.postid.toString():''}
-                                            onClose={() => setSelectedPostId(null)}
-                                            onSave={handleNewComment}
+                                    {/* Body */}
+                                    <p className="text-gray-700 text-lg">{post['body']}</p>
+
+                                    {/* Category */}
+                                    <p className="text-blue-600 font-bold">#{post.category}</p>
+
+                                    {/* Buttons */}
+                                    <div className="flex items-center space-x-4 mt-4">
+                                        {/* Like Button */}
+                                        <LikeButton
+                                            postId={post['postid']}
+                                            onLike={() => handleLike(post.postid)}
                                         />
-                                    </>
-                                )}
-                            </li>
-                        ))}
-                    </ul>
-                )}
+
+                                        {/* Comment Button */}
+                                        <button
+                                            onClick={() => setSelectedPostId(post.postid)}
+                                            className="bg-blue-300 px-4 py-1 rounded-lg"
+                                        >
+                                            <div className="flex items-center space-x-2">
+                                                {/* Comment Icon */}
+                                                <img
+                                                    src={Comment}
+                                                    alt="Comment Icon"
+                                                    className="w-5 h-5"
+                                                />
+
+                                                {/* Number of Comments */}
+                                                <span>{post.comments.length}</span>
+                                            </div>
+                                        </button>
+
+                                        {/* Delete Button */}
+                                        <button
+                                            onClick={() => handleDelete(post['postid'])}
+                                            className="bg-red-300 px-4 py-2 rounded-lg"
+                                        >
+                                            <img src={Delete} alt="Delete Icon" className="w-4 h-4" />
+                                        </button>
+                                    </div>
+
+                                    {selectedPostId === post.postid && (
+                                        <>
+                                            {renderComments(post.postid)}
+                                            <CommentForm
+                                                postId={post.postid ? post.postid.toString() : ''}
+                                                onClose={() => setSelectedPostId(null)}
+                                                onSave={handleNewComment}
+                                            />
+                                        </>
+                                    )}
+                                </li>
+                            ))}
+                        </ul>
+                    )}
+                </div>
             </div>
+
         </div>
     );
-}    
+}
+
+
+
+

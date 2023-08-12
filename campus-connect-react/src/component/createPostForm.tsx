@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { SetStateAction, useState } from "react";
 import { useNavigate, useLocation } from 'react-router-dom';
 
 
@@ -31,6 +31,12 @@ const PostForm = () => {
     const [body, setBody] = useState('');
     //const [isSubmitting, setIsSubmitting] = useState(false); // Add this state
 
+    const [selectedCategory, setSelectedCategory] = useState('');
+
+    const handleCategoryChange = (e: { target: { value: SetStateAction<string>; }; }) => {
+        setSelectedCategory(e.target.value);
+    };
+
     const handleTitleChange = (e: { target: { value: React.SetStateAction<string>; }; }) => {
         setTitle(e.target.value);
     };
@@ -44,13 +50,14 @@ const PostForm = () => {
     const handleSubmit = async (e: { preventDefault: () => void; }) => {
         e.preventDefault();
         //setIsSubmitting(true); // Set the isSubmitting state to true
+
         try {
             const response = await fetch('http://localhost:3000/db/posts', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
                 },
-                body: JSON.stringify({ title, body }),
+                body: JSON.stringify({ title, body, selectedCategory }),
             });
 
             // Handle the response here (e.g., show success message, redirect, etc.)
@@ -107,6 +114,24 @@ const PostForm = () => {
                         required
                     />
                 </div>
+                <div className="mb-4">
+                    <label htmlFor="category" className="block text-gray-700 font-bold mb-2">
+                        Choose Category
+                    </label>
+                    <select
+                        id="category"
+                        className="w-full px-3 py-2 border rounded-lg focus:outline-none focus:border-blue-500"
+                        value={selectedCategory}
+                        onChange={handleCategoryChange}
+                        required
+                    >
+                        <option value="">Select a category</option>
+                        <option value="category1">Category 1</option>
+                        <option value="category2">Category 2</option>
+                        <option value="category3">Category 3</option>
+                        {/* Add more categories as needed */}
+                    </select>
+                </div>
                 <div className="flex justify-end">
                     <button
                         type="submit"
@@ -117,6 +142,7 @@ const PostForm = () => {
                 </div>
             </form>
         </div>
+
     );
 };
 
@@ -125,20 +151,32 @@ const PostForm = () => {
 
 
 export default function CreatePostForm() {
+    const navigate = useNavigate();
+
+    const location = useLocation();
 
     return (
 
 
-        <div className="grid grid-cols-12 gap-4 m-20">
+        <div className="grid grid-cols-12 gap-4 m-20 bg-white rounded-lg shadow-md">
             {/* Larger column */}
             <div className="col-span-8 p-4">
                 <PostForm />
             </div>
 
-            {/* Smaller column */}
-            <div className="col-span-4 p-4">
 
+
+            <div className="col-span-4 p-4">
                 <Tag />
+                <div className="flex justify-end mt-4">
+
+                    <button
+                        onClick={() => navigate('/home', { state: { user_id: location.state?.user_id } })}
+                        className="w-full bg-blue-500 text-white font-bold px-4 py-2 rounded hover:bg-blue-600"
+                    >
+                        Back
+                    </button>
+                </div>
             </div>
         </div>
     );
