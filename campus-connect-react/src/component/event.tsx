@@ -8,6 +8,7 @@ interface Event {
   location: string;
 }
 
+// An event component that displays the upcoming event from our database 
 const EventBoard: React.FC = () => {
   const [events, setEvents] = useState<Event[]>([]);
 

@@ -3,6 +3,7 @@ import Event from "../image/calendar.png";
 
 const categories = ["IT", "Computer Science", "Events"];
 
+// a sidebar that will display all the categories in the homepage
 export default function SideBar() {
     return (
         <div >

@@ -12,7 +12,8 @@ import Comment from '../image/comment.png';
 import React from 'react';
 import PostIcon from '../image/post.png';
 
-
+// our main page this is the page that the user will see when they log in
+// Creates logic to see all posts and use effects 
 
 type Post = {
     postid: number;
@@ -31,10 +32,6 @@ export default function Home() {
     const [username, setUsername] = useState('');
     const [selectedPostId, setSelectedPostId] = useState<number | null>(null);
     const [comments, setComments] = useState<any[]>([]);
-
-
-
-
 
     // const checkLoginStatus = async () => {
     //     try {
@@ -122,7 +119,7 @@ export default function Home() {
 
 
 
-
+    // displays all the comment 
     const renderComments = (postId: number): JSX.Element => {
         const postComments = comments[postId - 1] || [];  // assuming postId starts from 1
 

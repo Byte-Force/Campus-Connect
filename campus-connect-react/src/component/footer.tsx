@@ -1,5 +1,6 @@
 import React from 'react';
 
+//footer od website 
 const Footer: React.FC = () => {
     return (
         <footer className="bg-white-200 text-black text-center">
