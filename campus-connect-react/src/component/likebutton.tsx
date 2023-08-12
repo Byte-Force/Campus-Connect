@@ -8,7 +8,7 @@ type LikeButtonProps = {
   onLike: () => Promise<void>;
 };
 
-
+//Like button shows if a user liked this event or not 
 
 const LikeButton: React.FC<LikeButtonProps> = ({ onLike }) => {
   const [isLiked, setIsLiked] = useState(false);

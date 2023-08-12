@@ -3,7 +3,7 @@ import { useNavigate, useLocation } from 'react-router-dom';
 
 
 
-
+//The tag creates a component that will be a tag for the community to beware of when posting
 const Tag = () => {
     return (
         <div className="flex flex-wrap justify-center bg-slate-200  p-5  pt-5  rounded-lg ">
@@ -20,8 +20,8 @@ const Tag = () => {
 
 }
 
-// ------------ implement Label funcationality  ------
-
+// The PostForm component creates a form for the user to create a post
+// The user can enter a title, body, and select a category and click on post which then will connect to the database 
 const PostForm = () => {
     const navigate = useNavigate();
 
@@ -49,8 +49,6 @@ const PostForm = () => {
 
     const handleSubmit = async (e: { preventDefault: () => void; }) => {
         e.preventDefault();
-        //setIsSubmitting(true); // Set the isSubmitting state to true
-
         try {
             const response = await fetch('http://localhost:3000/db/posts', {
                 method: 'POST',
@@ -67,14 +65,13 @@ const PostForm = () => {
                 // const sessionData = location.state?.sessionData;
                 // console.log('Session Data:', sessionData);
                 navigate('/home', { state: { user_id: location.state?.user_id } });
-                // Additional logic here, e.g., redirect to another page
+
             } else {
                 console.error('Failed to create post.');
             }
         } catch (error) {
             console.error('Error creating post:', error);
         }
-        // Here, you can implement the logic to post the data to your backend or do anything you need with the title and body values.
         console.log('Title:', title);
         console.log('Body:', body);
 
@@ -84,6 +81,7 @@ const PostForm = () => {
     };
 
 
+    // display of the post form 
     return (
         <div>
             <h1 className="text-2xl font-bold"> Create a Post</h1>

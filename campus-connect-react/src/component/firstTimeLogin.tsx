@@ -1,6 +1,9 @@
 import { useState } from "react";
 import { useNavigate } from 'react-router-dom';
 
+
+//Lets the user select the categories that they want to follow or are more interested in
+
 const Grid = () => {
     const [selectedPills, setSelectedPills] = useState<number[]>([]);
 
@@ -11,9 +14,8 @@ const Grid = () => {
             setSelectedPills([...selectedPills, pill]);
         }
     };
-
+    // categories name
     const pillNames = ['alb', 'c', 'd', 'e', 'eve', 'e', 'e', 'e', 'bye'];
-
     return (
         <div className="grid grid-cols-3 gap-4">
             {pillNames.map((pill, index) => (
@@ -30,8 +32,8 @@ const Grid = () => {
     );
 };
 
+
 export default function FirstTimeLogin() {
-    // now is a hardcoded string later we will get the user name from backend 
     const [usrname] = useState("Wendy");
     const navigate = useNavigate();
 

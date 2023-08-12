@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import { Link } from 'react-router-dom';
 
+//handles signup logic and allows signup for users 
 const SignUp = () => {
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
@@ -11,6 +12,7 @@ const SignUp = () => {
 
   const navigate = useNavigate();
 
+  // connects to endpoint for register
   const handleSignUp = async () => {
     if (password !== repassword) {
       console.log('Passwords do not match');
@@ -38,6 +40,7 @@ const SignUp = () => {
     }
   };
 
+  // display comment 
   return (
     <div className="min-h-screen bg-gradient-to-r from-purple-400 via-pink-500 to-red-500 flex items-center justify-center">
       <div className="border rounded-lg shadow-lg p-8 bg-white w-full max-w-md">
