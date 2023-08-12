@@ -97,12 +97,16 @@ app.get('/db/check_login', async (req, res) => {
 
 app.post('/db/login', async (req, res) => {
     try {
+        // Connect to the MongoDB cluster and access the 'users' collection
         await client.connect();
         const database = client.db('CampusConnect');
         const collection = database.collection('users');
         const { userName, password } = req.body;
+
+        // Check if the username exists in the database
         const user = await collection.findOne({ userName });
 
+        // If the username exists, check if the password is correct
         if (user && await bcrypt.compare(password, user.password)) {
             req.session.userName = user.userName;
             console.log("Session after login: ", req.session); // Log session information
@@ -120,17 +124,24 @@ app.post('/db/login', async (req, res) => {
 
 app.post('/db/register', async (req, res) => {
     try {
+        // Connect to the MongoDB cluster and access the 'users' collection
         await client.connect();
         const database = client.db('CampusConnect');
         const collection = database.collection('users');
         const userCount = await collection.countDocuments();
+
+        // Extract the request body which contains the new user information
         const { userName, password, rpiEmail } = req.body;
 
+        // Check if the email is a valid RPI email
         const isRpiEmail = rpiEmail.endsWith('@rpi.edu');
         if (!isRpiEmail) {
             res.json({ success: false, message: 'Please provide a valid RPI email address' });
         }
 
+        // Check if the username or email already exists in the database
+        // If so, return an error message
+        // If not, create a new user in the database
         const existUser = await collection.findOne({ $or: [{ userName }, { rpiEmail }] });
         if (existUser) {
             res.json({ success: false, message: 'Username or RPI email already exists' });
@@ -143,10 +154,8 @@ app.post('/db/register', async (req, res) => {
                 password: hashedPassword,
                 admin: 0
             };
-
             const result = await collection.insertOne(newUser);
             req.session.userId = result.insertedId;
-
             return res.json({ success: true, userName: newUser.userName, user_id: newUser.user_id });
         }
     } catch (err) {
@@ -177,7 +186,6 @@ app.post('/db/posts', async (req, res) => {
     }
 });
 
-
 app.get('/db/posts', async (req, res) => {
     try {
         await client.connect();
@@ -196,12 +204,13 @@ app.get('/db/posts', async (req, res) => {
 // Delete a post from the database
 app.delete('/db/posts/:postid', async (req, res) => {
     try {
+        // Connect to the MongoDB cluster and access the 'post' collection
         await client.connect();
-        const postIdToDelete = parseInt(req.params.postid); // Get the postId from the request URL
-
-
         const database = client.db('CampusConnect');
         const collection = database.collection('post');
+
+        // Get the postId from the request URL
+        const postIdToDelete = parseInt(req.params.postid); 
 
         // Check if the post exists before deleting
         const existingPost = await collection.findOne({ "postid": postIdToDelete });
@@ -222,10 +231,9 @@ app.delete('/db/posts/:postid', async (req, res) => {
 });
 
 
-
 app.get('/db/events', async (req, res) => {
     try {
-        // retrieve the data 
+        // Connect to the MongoDB cluster and access the 'events' collection
         await client.connect();
         const database = client.db('CampusConnect');
         const collection = database.collection('events');
@@ -242,10 +250,10 @@ app.get('/db/events', async (req, res) => {
 
 // Endpoint for liking a post
 app.post('/db/like', async (req, res) => {
+    // Request body should contain the userId and postId
     const { userId, postId } = req.body;
-    // console log the userId and postId
     try {
-        // Grab the postID from the database collection
+        // Connect to the MongoDB cluster and access the 'post' collection
         await client.connect();
         const database = client.db('CampusConnect');
         const postsCollection = database.collection('post');
@@ -263,7 +271,7 @@ app.post('/db/like', async (req, res) => {
             return res.status(400).json({ error: 'User has already liked this post.' });
         }
 
-        // Step 3: Update the post with the like count and userId
+        // Update the post with the like count and userId
         const updatedPost = await postsCollection.findOneAndUpdate(
             { "postid": parsedPostId },
             {
@@ -273,7 +281,6 @@ app.post('/db/like', async (req, res) => {
             { returnOriginal: false }
         );
         res.status(200).json({ message: 'Post liked successfully' });
-
     } catch (error) {
         console.error('Error occurred:', error);
         res.status(500).json({ error: 'Something went wrong.' });
@@ -285,10 +292,10 @@ app.post('/db/like', async (req, res) => {
 
 // Endpoint for commenting a post
 app.post('/db/comment', async (req, res) => {
+    // Request body should contain the commentBody and postId
     const { commentBody, postId } = req.body;
-    // console log the userId and postId
     try {
-        // Grab the postID from the database collection
+        // Connect to the MongoDB cluster and access the 'post' collection
         await client.connect();
         const database = client.db('CampusConnect');
         const postsCollection = database.collection('post');
@@ -323,16 +330,16 @@ app.post('/db/comment', async (req, res) => {
 // Endpoint for editing a post
 // Edit a post in the database
 app.put('/db/posts/:postid', async (req, res) => {
+    // Get the postId from the request URL
     const postIdToUpdate = parseInt(req.params.postid);
-
     try {
+        // Connect to the MongoDB cluster and access the 'post' collection
         await client.connect();
         const database = client.db('CampusConnect');
         const collection = database.collection('post');
 
         // Find the post with the specified postId
         const foundPost = await collection.findOne({ postid: postIdToUpdate });
-
         if (!foundPost) {
             // If the post with the specified postId is not found, return a 404 Not Found response
             return res.status(404).json({ error: 'Post not found' });
