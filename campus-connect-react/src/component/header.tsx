@@ -23,24 +23,16 @@ export default function Headers() {
                             </Link>
                         </li>
                         <li>
-                            <a
-                                href="#"
+                            <Link
+                                to="/contact-us"
                                 className="font-bold px-4 py-2 rounded-lg hover:bg-red-600 transition-colors duration-300"
-                            >
-                                About Us
-                            </a>
-                        </li>
-                        <li>
-                            <a
-                                href="#"
-                                className="font-bold px-4 py-2 rounded-lg hover:bg-red-600 transition-colors duration-300"
-                            >
-                                Contact
-                            </a>
+                            >Contact Us</Link>
                         </li>
                     </ul>
                 </nav>
             </div>
+
+
         </header>
     );
 }

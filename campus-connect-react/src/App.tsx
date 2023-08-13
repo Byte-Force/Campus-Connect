@@ -14,6 +14,7 @@ import SigninPage from './pages/LoginPage';
 import SignupPage from './pages/SignupPage';
 import CreatePostPage from './pages/CreatePostPage.tsx';
 import CategoryPostsPage from './pages/CategoryPostsPage.tsx';
+import ContactUs from './component/contactUS.tsx';
 
 function App() {
   return (
@@ -32,7 +33,11 @@ function App() {
         <Route path="/home" element={<HomePage />} />
         <Route path="/first-time-login" element={<FirstTimeLoginPage />} />
         <Route path="/create-post" element={<CreatePostPage />} />
+
         <Route path="/category/:category" element={<CategoryPostsPage />} />
+
+        <Route path="/contact-us" element={<ContactUs />} />
+
 
       </Routes>
     </Router>
