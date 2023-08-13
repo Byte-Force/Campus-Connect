@@ -23,6 +23,10 @@ const ContactUs = () => {
 
   return (
     <div>
+      <h1>Campus Connect is the ultimate student discussion platform exclusively designed for Rensselaer Polytechnic Institute (RPI) students. 
+        It's a comprehensive web application that serves as a vibrant hub for collaboration, knowledge sharing, and engagement. 
+        With dedicated blocks for live events, study groups, and coding projects, Campus Connect provides a centralized platform for RPI students to enhance their academic and social experiences. 
+        Stay connected, exchange ideas, and thrive with Campus Connect, your ultimate tool for unity and connectivity within the RPI community.</h1>
       <h2>Contact Us</h2>
       <form onSubmit={handleSubmit}>
         <div>
