@@ -30,7 +30,7 @@ const CategoryPosts: React.FC<CategoryPostsProps> = () => {
     const location = useLocation();
 
     const [posts, setPosts] = useState<Post[]>([]);
-    const [userid, setUserid] = useState<number>(0);
+    const userid = 0;
     const [selectedPostId, setSelectedPostId] = useState<number | null>(null);
 
 
