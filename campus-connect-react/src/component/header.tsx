@@ -24,14 +24,14 @@ export default function Headers() {
                     </li>
                     <li>
                         <a href="#" className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600">
-                            About Us
+                            Contact Us
                         </a>
                     </li>
-                    <li>
+                    {/* <li>
                         <a href="#" className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600">
                             Contact
                         </a>
-                    </li>
+                    </li> */}
 
                 </ul>
             </nav>
