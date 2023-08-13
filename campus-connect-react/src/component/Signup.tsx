@@ -1,7 +1,9 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
+import { Link } from 'react-router-dom';
 
+//handles signup logic and allows signup for users 
 const SignUp = () => {
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
@@ -10,6 +12,7 @@ const SignUp = () => {
 
   const navigate = useNavigate();
 
+  // connects to endpoint for register
   const handleSignUp = async () => {
     if (password !== repassword) {
       console.log('Passwords do not match');
@@ -21,7 +24,7 @@ const SignUp = () => {
       {
         userName: username,
         password,
-        rpiEmail: email
+        rpiEmail: email,
       },
       { withCredentials: true }
     );
@@ -37,60 +40,75 @@ const SignUp = () => {
     }
   };
 
+  // display comment 
   return (
-    <div className="border-r-gray-700 m-10 p-10 bg-gray-200">
-      <label className="text-red-600 font-bold text-2xl flex items-center justify-center h-full">
-        <h1>Sign Up</h1>
-      </label>
-      <form>
-        <label className="text-black font-bold text-xl flex flex-col ">
-          Username:
-          <br />
-          <input
-            type="text"
-            value={username}
-            onChange={(e) => setUsername(e.target.value)}
-          />
-        </label>
-        <br />
-        <label className="text-black font-bold text-xl flex flex-col ">
-          Password:
-          <br />
-          <input
-            type="password"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-          />
-        </label>
-        <br />
-        <label className="text-black font-bold text-xl flex flex-col ">
-          Re-enter Password:
-          <br />
-          <input
-            type="password"
-            value={repassword}
-            onChange={(e) => setRepassword(e.target.value)}
-          />
-        </label>
-        <br />
-        <label className="text-black font-bold text-xl flex flex-col ">
-          Email:
-          <br />
-          <input
-            type="email"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-          />
-        </label>
-        <br />
-        <button
-          className="w-50 px-10 py-2 bg-red-500 text-white rounded cursor-pointer mx-auto mt-2 flex justify-center"
-          type="button"
-          onClick={handleSignUp}
-        >
+    <div className="min-h-screen bg-gradient-to-r from-purple-400 via-pink-500 to-red-500 flex items-center justify-center">
+      <div className="border rounded-lg shadow-lg p-8 bg-white w-full max-w-md">
+        <h1 className="text-3xl font-bold text-center mb-6 text-gray-800">
           Sign Up
-        </button>
-      </form>
+        </h1>
+        <form>
+          <div className="mb-4">
+            <label className="text-gray-700 font-bold text-xl">
+              Username:
+            </label>
+            <input
+              type="text"
+              value={username}
+              onChange={(e) => setUsername(e.target.value)}
+              className="border rounded-lg px-3 py-2 w-full focus:outline-none focus:ring focus:border-blue-300"
+            />
+          </div>
+          <div className="mb-4">
+            <label className="text-gray-700 font-bold text-xl">
+              Password:
+            </label>
+            <input
+              type="password"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              className="border rounded-lg px-3 py-2 w-full focus:outline-none focus:ring focus:border-blue-300"
+            />
+          </div>
+          <div className="mb-4">
+            <label className="text-gray-700 font-bold text-xl">
+              Re-enter Password:
+            </label>
+            <input
+              type="password"
+              value={repassword}
+              onChange={(e) => setRepassword(e.target.value)}
+              className="border rounded-lg px-3 py-2 w-full focus:outline-none focus:ring focus:border-blue-300"
+            />
+          </div>
+          <div className="mb-4">
+            <label className="text-gray-700 font-bold text-xl">Email:</label>
+            <input
+              type="email"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              className="border rounded-lg px-3 py-2 w-full focus:outline-none focus:ring focus:border-blue-300"
+            />
+          </div>
+          <button
+            className="w-full bg-gradient-to-r from-blue-400 to-purple-600 hover:from-purple-500 hover:to-blue-500 text-white font-bold py-2 rounded-lg transition-colors duration-300"
+            type="button"
+            onClick={handleSignUp}
+          >
+            Sign Up
+          </button>
+        </form>
+        <div className="mt-4 text-center">
+          <span className="mr-2">Already have an account?</span>
+          <span >
+            <Link
+              to="/"
+              className="text-blue-600 font-bold hover:text-blue-800 transition-colors duration-300"
+            >Login
+            </Link>
+          </span>
+        </div>
+      </div>
     </div>
   );
 };
