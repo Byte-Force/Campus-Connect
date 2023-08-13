@@ -14,7 +14,8 @@ import SigninPage from './pages/LoginPage';
 import SignupPage from './pages/SignupPage';
 import CreatePostPage from './pages/CreatePostPage.tsx';
 import CategoryPostsPage from './pages/CategoryPostsPage.tsx';
-import ContactUs from './component/contactUS.tsx';
+import ContactUs from './pages/ContactUsPage.tsx';
+
 
 function App() {
   return (

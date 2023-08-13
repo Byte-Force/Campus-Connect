@@ -1,65 +1,101 @@
-// ContactUs.js
-import { useState, ChangeEvent, FormEvent } from 'react';
+import React, { useState } from 'react';
 
-const ContactUs = () => {
-  const [formData, setFormData] = useState({
-    name: '',
-    email: '',
-    message: '',
-  });
+import axios from 'axios';
 
-  const handleChange = (e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
-    const { name, value } = e.target;
-    setFormData((prevData) => ({
-      ...prevData,
-      [name]: value,
-    }));
+const ContactUs: React.FC = () => {
+  const [name, setName] = useState('');
+  const [email, setEmail] = useState('');
+  const [message, setMessage] = useState('');
+
+
+
+  const handleNameChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setName(e.target.value);
   };
 
-  const handleSubmit = (e: FormEvent) => {
+  const handleEmailChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setEmail(e.target.value);
+  };
+
+  const handleMessageChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
+    setMessage(e.target.value);
+  };
+
+  const handleFormSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    console.log(formData);
+    console.log('Submitting contact form:', name, email, message);
+
+    try {
+      // Replace the endpoint URL with the actual API endpoint for submitting the contact form
+      const response = await axios.post(
+        'http://localhost:3000/api/submit-contact-form',
+        {
+          name,
+          email,
+          message,
+        }
+      );
+
+      if (response.data.success) {
+        console.log('Contact form submitted successfully');
+        setName('');
+        setEmail('');
+        setMessage('');
+
+        // Redirect or display a success message here
+      } else {
+        console.log('Contact form submission failed:', response.data.message);
+      }
+    } catch (error) {
+      console.error('Error occurred during contact form submission:', error);
+    }
   };
 
   return (
-    <div>
-      <h1>Campus Connect is the ultimate student discussion platform exclusively designed for Rensselaer Polytechnic Institute (RPI) students. 
-        It's a comprehensive web application that serves as a vibrant hub for collaboration, knowledge sharing, and engagement. 
-        With dedicated blocks for live events, study groups, and coding projects, Campus Connect provides a centralized platform for RPI students to enhance their academic and social experiences. 
-        Stay connected, exchange ideas, and thrive with Campus Connect, your ultimate tool for unity and connectivity within the RPI community.</h1>
-      <h2>Contact Us</h2>
-      <form onSubmit={handleSubmit}>
-        <div>
-          <label>Name:</label>
-          <input
-            type="text"
-            name="name"
-            value={formData.name}
-            onChange={handleChange}
-            required
-          />
-        </div>
-        <div>
-          <label>Email:</label>
-          <input
-            type="email"
-            name="email"
-            value={formData.email}
-            onChange={handleChange}
-            required
-          />
-        </div>
-        <div>
-          <label>Message:</label>
-          <textarea
-            name="message"
-            value={formData.message}
-            onChange={handleChange}
-            required
-          />
-        </div>
-        <button type="submit">Submit</button>
-      </form>
+    <div className="min-h-screen bg-gradient-to-r from-purple-400 via-pink-500 to-red-500 flex items-center justify-center">
+      <div className="border rounded-lg shadow-lg p-8 bg-white w-full max-w-md">
+        <h1 className="text-3xl font-bold text-center mb-6 text-gray-800">
+          Contact Us
+        </h1>
+        <form onSubmit={handleFormSubmit}>
+          <div className="mb-5">
+            <label className="text-gray-700 font-bold text-xl">Name:</label>
+            <input
+              type="text"
+              value={name}
+              onChange={handleNameChange}
+              className="border rounded-lg px-3 py-2 w-full focus:outline-none focus:ring focus:border-blue-300"
+              required
+            />
+          </div>
+          <div className="mb-5">
+            <label className="text-gray-700 font-bold text-xl">Email:</label>
+            <input
+              type="email"
+              value={email}
+              onChange={handleEmailChange}
+              className="border rounded-lg px-3 py-2 w-full focus:outline-none focus:ring focus:border-blue-300"
+              required
+            />
+          </div>
+          <div className="mb-5">
+            <label className="text-gray-700 font-bold text-xl">Message:</label>
+            <textarea
+              value={message}
+              onChange={handleMessageChange}
+              className="border rounded-lg px-3 py-2 w-full focus:outline-none focus:ring focus:border-blue-300"
+              rows={5}
+              required
+            />
+          </div>
+          <button
+            className="w-full bg-gradient-to-r from-blue-400 to-purple-600 hover:from-purple-500 hover:to-blue-500 text-white font-bold py-2 rounded-lg transition-colors duration-300"
+            type="submit"
+          >
+            Submit
+          </button>
+        </form>
+      </div>
     </div>
   );
 };

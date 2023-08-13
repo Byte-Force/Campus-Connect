@@ -9,7 +9,10 @@ export default function Headers() {
         <header className="bg-white-300">
             <div className="container mx-auto flex items-center justify-between p-4">
                 <div className="flex items-center">
-                    <img src={Logo} alt="Logo" className="w-12 h-12" />
+                    <Link to="/">
+                        <img src={Logo} alt="Logo" className="w-12 h-12" />
+                    </Link>
+
                     <h1 className="text-xl font-bold text-black ml-2"></h1>
                 </div>
                 <nav>
