@@ -7,7 +7,7 @@ const ContactUs: React.FC = () => {
   const [email, setEmail] = useState('');
   const [message, setMessage] = useState('');
 
-  const navigate = useNavigate();
+
 
   const handleNameChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setName(e.target.value);
