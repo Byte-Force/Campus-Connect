@@ -23,40 +23,15 @@ export default function Headers() {
                             </Link>
                         </li>
                         <li>
-                            <a
-                                href="#"
+                            <Link
+                                to="/contact-us"
                                 className="font-bold px-4 py-2 rounded-lg hover:bg-red-600 transition-colors duration-300"
-                            >
-                                About Us
-                            </a>
-                        </li>
-                        <li>
-                            <a
-                                href="#"
-                                className="font-bold px-4 py-2 rounded-lg hover:bg-red-600 transition-colors duration-300"
-                            >
-                                Contact
-                            </a>
+                            >Contact Us</Link>
                         </li>
                     </ul>
                 </nav>
             </div>
 
-            <nav>
-                <ul className="flex space-x-4 mr-10">
-                    <li>
-                        <Link to="/signin" className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600">
-                            Sign In
-                        </Link>
-                    </li>
-                    <li>
-                        <a href="#" className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600">
-                            Contact Us
-                        </a>
-                    </li>
-
-                </ul>
-            </nav>
 
         </header>
     );
