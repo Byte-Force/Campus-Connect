@@ -123,11 +123,21 @@ const PostForm = () => {
                         onChange={handleCategoryChange}
                         required
                     >
+                        #const categories = ["IT", "Computer Science", "Business", "Engineering", "Science", "Mathematics", "Arts", "Music", "Sports", "Health", "Other"];
+
                         <option value="">Select a category</option>
-                        <option value="category1">Category 1</option>
-                        <option value="category2">Category 2</option>
-                        <option value="category3">Category 3</option>
-                        {/* Add more categories as needed */}
+                        <option value="IT">IT</option>
+                        <option value="Computer Science">Computer Science</option>
+                        <option value="Business">Business</option>
+                        <option value="Engineering">Engineering</option>
+                        <option value="Science">Science</option>
+                        <option value="Mathematics">Mathematics</option>
+                        <option value="Arts">Arts</option>
+                        <option value="Music">Music</option>
+                        <option value="Sports">Sports</option>
+                        <option value="Health">Health</option>
+                        <option value="Other">Other</option>
+
                     </select>
                 </div>
                 <div className="flex justify-end">

@@ -13,15 +13,16 @@ import FirstTimeLoginPage from './pages/FirstTimeLoginPage.tsx';
 import SigninPage from './pages/LoginPage';
 import SignupPage from './pages/SignupPage';
 import CreatePostPage from './pages/CreatePostPage.tsx';
+import CategoryPostsPage from './pages/CategoryPostsPage.tsx';
 import ContactUs from './component/contactUS.tsx';
 
 function App() {
   return (
     <Router>
-          {/* <div className="like-button-container">
+      {/* <div className="like-button-container">
           <LikeButton />
         </div> */}
-        {/* {<div className="event-board-container">
+      {/* {<div className="event-board-container">
           <EventBoard />
           </div>} */}
 
@@ -32,7 +33,11 @@ function App() {
         <Route path="/home" element={<HomePage />} />
         <Route path="/first-time-login" element={<FirstTimeLoginPage />} />
         <Route path="/create-post" element={<CreatePostPage />} />
+
+        <Route path="/category/:category" element={<CategoryPostsPage />} />
+
         <Route path="/contact-us" element={<ContactUs />} />
+
 
       </Routes>
     </Router>

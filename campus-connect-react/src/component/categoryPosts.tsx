@@ -1,9 +1,9 @@
 import {
-
     useState,
     useEffect
 } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
+import { useParams } from 'react-router-dom'; // Import the useParams hook
 import CommentForm from './commentForm';
 import axios from 'axios';
 import LikeButton from './likebutton';
@@ -12,93 +12,57 @@ import Comment from '../image/comment.png';
 import React from 'react';
 import PostIcon from '../image/post.png';
 
-
-// our main page this is the page that the user will see when they log in
-// Creates logic to see all posts and use effects 
+type CategoryPostsProps = {};
 
 type Post = {
     postid: number;
     title: string;
     body: string;
-    comments: string[]; // Assuming comments is an array of strings
-    category: string; // New property for the category of the post
+    comments: string[];
+    category: string;
 };
 
-export default function Home() {
+const CategoryPosts: React.FC<CategoryPostsProps> = () => {
+    const { category } = useParams<{ category: string }>(); // Use the useParams hook here
+    //const [categoryPosts, setCategoryPosts] = useState<Post[]>([]);
+    const [comments, setComments] = useState<{ [postId: number]: string[] }>({});
     const navigate = useNavigate();
     const location = useLocation();
 
     const [posts, setPosts] = useState<Post[]>([]);
-    const [userid, setUserid] = useState<number>(0);
-    const [username, setUsername] = useState('');
+    const userid = 0;
     const [selectedPostId, setSelectedPostId] = useState<number | null>(null);
-    const [comments, setComments] = useState<{ [postId: number]: string[] }>({});
 
-
-    // const checkLoginStatus = async () => {
-    //     try {
-    //         const response = await axios.get(
-    //             'http://localhost:3000/db/check_login',
-    //             { withCredentials: true }
-    //         );
-    //         setIsLoggedIn(response.data.loggedIn);
-    //         // Set the username state if the user is logged in
-    //         if (response.data.loggedIn) {
-    //             setUsername(response.data.userName);
-    //         }
-    //         console.log('Username has changed:', response.data.userName);
-    //     } catch (error) {
-    //         console.error('Error checking login status:', error);
-    //     }
-    // };
 
     useEffect(() => {
-        const fetchPosts = async () => {
+        const fetchCategoryPosts = async () => {
             try {
-                const response = await axios.get('http://localhost:3000/db/posts'); // Use axios.get
-                if (response.status === 200) {
-                    const data = response.data;
+                const response = await fetch(`http://localhost:3000/db/posts?category=${category}`);
+                if (response.ok) {
+                    const data = await response.json();
                     if (data.success) {
                         const fetchedPosts = data.posts || [];
-                        fetchedPosts.sort((a: Post, b: Post) => b.postid - a.postid);
+                        const filteredPosts = fetchedPosts.filter((post: Post) => post.category === category);
+                        filteredPosts.sort((a: Post, b: Post) => b.postid - a.postid);
+                        setPosts(filteredPosts);
 
                         const commentsByPostId: { [postId: number]: string[] } = {};
-                        fetchedPosts.forEach((post: Post) => {
+                        filteredPosts.forEach((post: Post) => {
                             commentsByPostId[post.postid] = post.comments;
                         });
-
-                        setPosts(fetchedPosts);
-                        setComments(commentsByPostId);
-
-
                     } else {
-                        console.error('Failed to fetch posts:', data);
+                        console.error('Failed to fetch category posts:', data);
                     }
                 } else {
-                    console.error('Failed to fetch posts:', response.status);
+                    console.error('Failed to fetch category posts:', response.status);
                 }
             } catch (error) {
-                console.error('Error fetching posts:', error);
+                console.error('Error fetching category posts:', error);
             }
         };
 
-        fetchPosts();
-
-        updateSessionData();
-    }, [location.state]);
-
-
-
-    function updateSessionData() {
-        const sessionData = location.state?.sessionData;
-        console.log('Session Data:', sessionData);
-        if (sessionData?.success) {
-            setUsername(sessionData.userName);
-            setUserid(sessionData.user_id);
-            console.log('Username has changed:', username);
-        }
-    }
-
+        fetchCategoryPosts();
+    }, [category, location.state]);
 
     const handleNewComment = async (postId: string, comment: string): Promise<void> => {
         try {
@@ -199,6 +163,7 @@ export default function Home() {
 
         navigate('/create-post', { state: { userid: userid } });
     }
+
     return (
         <div >
             <div >
@@ -296,3 +261,4 @@ export default function Home() {
 
 
 
+export default CategoryPosts;
