@@ -1,11 +1,13 @@
 import React, { useState } from 'react';
 
-import axios from 'axios';
+
+import { useNavigate } from 'react-router-dom';
 
 const ContactUs: React.FC = () => {
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
   const [message, setMessage] = useState('');
+  const navigate = useNavigate();
 
 
 
@@ -25,30 +27,20 @@ const ContactUs: React.FC = () => {
     e.preventDefault();
     console.log('Submitting contact form:', name, email, message);
 
-    try {
-      // Replace the endpoint URL with the actual API endpoint for submitting the contact form
-      const response = await axios.post(
-        'http://localhost:3000/api/submit-contact-form',
-        {
-          name,
-          email,
-          message,
-        }
-      );
 
-      if (response.data.success) {
-        console.log('Contact form submitted successfully');
-        setName('');
-        setEmail('');
-        setMessage('');
+    // Replace the endpoint URL with the actual API endpoint for submitting the contact form
 
-        // Redirect or display a success message here
-      } else {
-        console.log('Contact form submission failed:', response.data.message);
-      }
-    } catch (error) {
-      console.error('Error occurred during contact form submission:', error);
-    }
+
+
+    console.log('Contact form submitted successfully');
+    setName('');
+    setEmail('');
+    setMessage('');
+
+    // Redirect or display a success message here
+    navigate('/home');
+
+
   };
 
   return (
